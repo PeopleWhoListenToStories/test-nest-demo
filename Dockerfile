@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . ./
 
-RUN npm config set registry https://registry.npm.taobao.org/
+RUN npm config set registry http://registry.npm.taobao.org/
 
 COPY package.json /app/package.json
 
