@@ -10,9 +10,9 @@ RUN npm config set registry https://registry.npm.taobao.org/
 
 COPY package.json /app/package.json
 
-RUN rm -rf /app/package-lock.json
-RUN cd /app && rm -rf /app/node_modules &&  npm install
+RUN rm -rf /app/pnpm-lock.yaml
+RUN cd /app && rm -rf /app/node_modules && npm install -g pnpm && pnpm install
 
-RUN cd /app && rm -rf /app/dist &&  npm run build
+RUN cd /app && rm -rf /app/dist && pnpm build
 
-CMD npm run start:prod
+CMD pnpm start:prod
