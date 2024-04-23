@@ -1,0 +1,16 @@
+version: "3.0"
+
+services:
+    be-nest-online-editing: # nestjs服务
+        container_name: be-nest-online-editing
+        build: # 根据Dockerfile构建镜像
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - 3001:3001
+        restart: on-failure # 设置自动重启，这一步必须设置，主要是存在mysql还没有启动完成就启动了node服务
+        networks:
+            - nest-online-editing-server
+
+networks:
+    nest-online-editing-server:
