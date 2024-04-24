@@ -16,16 +16,27 @@ const { file: envFilePath, config: envConfig } = require('../config/env')
 // import { TasksModule } from './modules/tasks/task.module'
 
 // 设置模块
-// import { SettingModule } from './modules/setting/setting.module'
-// import { Setting } from './modules/setting/setting.entity'
+import { SettingModule } from './modules/setting/setting.module'
+import { Setting } from './modules/setting/setting.entity'
 
 // 文件模块
-// import { FileModule } from './modules/file/file.module'
-// import { File } from './modules/file/file.entity'
+import { FileModule } from './modules/file/file.module'
+import { File } from './modules/file/file.entity'
 
 // 邮件模块
-// import { SMTPModule } from './modules/smtp/smtp.module'
-// import { SMTP } from './modules/smtp/smtp.entity'
+import { SMTPModule } from './modules/smtp/smtp.module'
+import { SMTP } from './modules/smtp/smtp.entity'
+
+// 短信模块
+import { SmsModule } from './modules/sms/sms.module'
+import { Sms } from './modules/sms/sms.entity'
+
+// 鉴权模块
+import { AuthModule } from './modules/auth/auth.module'
+
+// 用户模块
+import { UserModule } from './modules/user/user.module'
+import { User } from './modules/user/user.entity'
 
 @Module({
   imports: [
@@ -34,26 +45,29 @@ const { file: envFilePath, config: envConfig } = require('../config/env')
     // }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true, envFilePath: [envFilePath] }),
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     type: 'mysql',
-    //     entities: [Setting],
-    //     host: configService.get('DB_HOST', envConfig.DB_HOST),
-    //     port: configService.get<number>('DB_PORT', envConfig.DB_PORT),
-    //     username: configService.get('DB_USER', envConfig.DB_USER),
-    //     password: configService.get('DB_PASSWD', envConfig.DB_PASSWD),
-    //     database: configService.get('DB_DATABASE', envConfig.DB_DATABASE),
-    //     charset: 'utf8mb4',
-    //     timezone: '+08:00',
-    //     // migrationsRun: true,
-    //     synchronize: true,
-    //   }),
-    // }),
-    // SettingModule,
-    // FileModule,
-    // SMTPModule
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        entities: [Setting, File, SMTP, Sms, User],
+        host: configService.get('DB_HOST', envConfig.DB_HOST),
+        port: configService.get<number>('DB_PORT', envConfig.DB_PORT),
+        username: configService.get('DB_USER', envConfig.DB_USER),
+        password: configService.get('DB_PASSWD', envConfig.DB_PASSWD),
+        database: configService.get('DB_DATABASE', envConfig.DB_DATABASE),
+        charset: 'utf8mb4',
+        timezone: '+08:00',
+        // migrationsRun: true,
+        synchronize: true,
+      }),
+    }),
+    SettingModule,
+    FileModule,
+    SMTPModule,
+    SmsModule,
+    AuthModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
