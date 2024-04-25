@@ -15,6 +15,4 @@ RUN cd /app && rm -rf /app/node_modules && npm install -g pnpm && pnpm install
 
 RUN cd /app && rm -rf /app/dist && pnpm build
 
-RUN cd /app && rm -rf node_modules
-
 CMD pnpm start:prod
