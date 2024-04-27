@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, SetMetadata } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Reflector } from '@nestjs/core'
-import { User } from '../user/user.entity'
+import { UserEntity } from '../modules/user/user.entity'
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles)
 
@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
       // 不需要 Bearer 否则验证失败 请求必须携带 Authorization = `${'Bearer'} ${token}`
       token = token.split(' ').pop()
     }
-    const user = this.jwtService.decode(token) as User
+    const user = this.jwtService.decode(token) as UserEntity
     if (!user) {
       return false
     }

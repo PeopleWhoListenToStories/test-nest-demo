@@ -1,10 +1,10 @@
 import { Controller, Get, HttpStatus, HttpCode, Post, Query, Body, Request, UseGuards, UseInterceptors, HttpException, ClassSerializerInterceptor } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ApiTags, ApiResponse, ApiOperation, ApiHeader } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'
-import { Roles } from '../auth/roles.guard'
+import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
+import { Roles } from '../../guard/roles.guard'
 import { UserService } from './user.service'
-import { User } from './user.entity'
+import { UserEntity } from './user.entity'
 
 @ApiTags('User 模块')
 @Controller('user')
@@ -15,7 +15,7 @@ export class UserController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @ApiResponse({ status: 200, description: '获取用户列表', type: [User] })
+  @ApiResponse({ status: 200, description: '获取用户列表', type: [UserEntity] })
   @ApiResponse({ status: 403, description: '无权获取用户列表' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
@@ -39,7 +39,7 @@ export class UserController {
    * 用户注册
    * @param user
    */
-  @ApiResponse({ status: 200, description: '创建用户', type: [User] })
+  @ApiResponse({ status: 200, description: '创建用户', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('register')
   @ApiOperation({
@@ -52,7 +52,7 @@ export class UserController {
     description: '本次请求请带上token',
   })
   @HttpCode(HttpStatus.OK)
-  async register(@Body() user: Partial<User>): Promise<User> {
+  async register(@Body() user: Partial<UserEntity>): Promise<UserEntity> {
     const d = await this.userService.createUser(user)
     return d
   }
@@ -68,7 +68,7 @@ export class UserController {
       // 不需要 Bearer，否则验证失败
       token = token.split(' ').pop()
     }
-    const tokenUser = this.jwtService.decode(token) as User
+    const tokenUser = this.jwtService.decode(token) as UserEntity
     const id = tokenUser.id
 
     if (!id) {
@@ -85,7 +85,7 @@ export class UserController {
    * 用户更新
    * @param user
    */
-  @ApiResponse({ status: 200, description: '更新用户成功', type: [User] })
+  @ApiResponse({ status: 200, description: '更新用户成功', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('update')
   @ApiOperation({
@@ -98,7 +98,7 @@ export class UserController {
     description: '本次请求请带上token',
   })
   @HttpCode(HttpStatus.OK)
-  async update(@Request() req, @Body() user: Partial<User>): Promise<User> {
+  async update(@Request() req, @Body() user: Partial<UserEntity>): Promise<UserEntity> {
     await this.checkPermission(req, user)
     const d = await this.userService.updateById(user.id, user)
     return d
@@ -108,7 +108,7 @@ export class UserController {
    * 更新用户密码
    * @param user
    */
-  @ApiResponse({ status: 200, description: '更新密码成功', type: [User] })
+  @ApiResponse({ status: 200, description: '更新密码成功', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('password')
   @ApiOperation({
@@ -121,7 +121,7 @@ export class UserController {
     description: '本次请求请带上token',
   })
   @HttpCode(HttpStatus.OK)
-  async updatePassword(@Request() req, @Body() user: Partial<User>): Promise<User> {
+  async updatePassword(@Request() req, @Body() user: Partial<UserEntity>): Promise<UserEntity> {
     await this.checkPermission(req, user)
     const d = await this.userService.updatePassword(user.id, user)
     return d

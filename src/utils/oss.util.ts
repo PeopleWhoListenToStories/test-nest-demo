@@ -17,7 +17,7 @@ export class Oss {
     const data = await this.settingService.findAll(true)
     const config = JSON.parse(data.oss) || {}
     if (!config) {
-      throw new HttpException('OSS 配置不完善，无法进行操作', HttpStatus.BAD_REQUEST)
+      throw new HttpException('OSS 配置不完善，无法进行操作', HttpStatus.INTERNAL_SERVER_ERROR)
     }
     return config as Record<string, unknown>
   }

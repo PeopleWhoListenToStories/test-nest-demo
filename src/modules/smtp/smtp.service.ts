@@ -29,7 +29,7 @@ export class SMTPService {
       user: smtpUser,
       pass: smtpPass,
     }).catch(() => {
-      throw new HttpException('邮件发送失败', HttpStatus.BAD_REQUEST)
+      throw new HttpException('邮件发送失败', HttpStatus.INTERNAL_SERVER_ERROR)
     })
     const newSMTP = await this.smtpRepository.create(data)
     await this.smtpRepository.save(newSMTP)

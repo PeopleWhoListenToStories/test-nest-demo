@@ -3,9 +3,10 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Exclude } from 'class-transformer'
 import * as bcrypt from 'bcryptjs'
 import { IsNotEmpty } from 'class-validator'
+import { UserStatus } from '../../constant'
 
 @Entity()
-export class User {
+export class UserEntity {
   /**
    * 检测密码是否一致
    * @param password0 加密前密码
@@ -20,7 +21,7 @@ export class User {
   }
 
   @PrimaryGeneratedColumn('uuid')
-  id: number
+  id: string
 
   @ApiProperty()
   @Column({ name: 'name', default: null, length: 500, comment: '名称' })
@@ -42,10 +43,6 @@ export class User {
   @ApiProperty()
   @Column('simple-enum', { enum: ['admin', 'visitor'], default: 'visitor' })
   role: string // 用户角色
-
-  @ApiProperty()
-  @Column('simple-enum', { enum: ['locked', 'active'], default: 'active' })
-  status: string // 用户状态
 
   @ApiProperty()
   @Column({ name: 'is_wx', default: 0, comment: '是否是微信用户' })
@@ -74,6 +71,18 @@ export class User {
   @ApiProperty()
   @Column({ name: 'gender', default: null, comment: '小程序用户gender' })
   gender: number
+
+  @ApiProperty()
+  @Column({ type: 'boolean', default: false, comment: '是否为系统管理员' })
+  isSystemAdmin: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.normal,
+    comment: '用户状态',
+  })
+  public status: UserStatus;
 
   @ApiProperty()
   @CreateDateColumn({

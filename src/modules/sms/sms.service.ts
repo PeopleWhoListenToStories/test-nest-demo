@@ -106,7 +106,7 @@ export class SmsService {
       smsData = [smsData]
     }
     // if (smsData.some((knowledge) => !knowledge.parentId)) {
-    //   throw new HttpException('无效的知识库章节', HttpStatus.BAD_REQUEST);
+    //   throw new HttpException('无效的知识库章节', HttpStatus.INTERNAL_SERVER_ERROR);
     // }
     const result = []
     for (const knowledge of smsData) {
@@ -147,7 +147,7 @@ export class SmsService {
   async deleteMobile(id) {
     const data = await this.repository.findOne(id)
     if (!data) {
-      throw new HttpException('没有对应的数据', HttpStatus.BAD_REQUEST)
+      throw new HttpException('没有对应的数据', HttpStatus.INTERNAL_SERVER_ERROR)
     }
     if (!data.id) {
       const query = this.repository.createQueryBuilder('sms').where('sms.id=:id').setParameter('id', data.id)
@@ -167,7 +167,7 @@ export class SmsService {
   async updateMobile(id, data: Partial<Sms>): Promise<Sms> {
     const oldData = await this.repository.findOne(id)
     if (!oldData) {
-      throw new HttpException('没有对应的数据', HttpStatus.BAD_REQUEST)
+      throw new HttpException('没有对应的数据', HttpStatus.INTERNAL_SERVER_ERROR)
     }
     const newData = {
       ...data,

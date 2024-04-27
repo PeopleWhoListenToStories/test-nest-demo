@@ -33,10 +33,23 @@ import { Sms } from './modules/sms/sms.entity'
 
 // 鉴权模块
 import { AuthModule } from './modules/auth/auth.module'
+import { AuthEntity } from './modules/auth/auth.entity';
 
 // 用户模块
 import { UserModule } from './modules/user/user.module'
-import { User } from './modules/user/user.entity'
+import { UserEntity } from './modules/user/user.entity'
+
+// 组织模块
+import { OrganizationModule } from './modules/organization/organization.module';
+import { OrganizationEntity } from './modules/organization/organization.entity'
+
+// wiki模块
+import { WikiModule } from './modules/wiki/wiki.module';
+import { WikiEntity } from './modules/wiki/wiki.entity'
+
+// 文档模块
+import { DocumentModule } from './modules/document/document.module'
+import { Document } from './modules/document/document.entity'
 
 @Module({
   imports: [
@@ -50,7 +63,7 @@ import { User } from './modules/user/user.entity'
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
-        entities: [Setting, File, SMTP, Sms, User],
+        entities: [Setting, File, SMTP, Sms, AuthEntity, UserEntity, OrganizationEntity, WikiEntity, Document],
         host: configService.get('DB_HOST', envConfig.DB_HOST),
         port: configService.get<number>('DB_PORT', envConfig.DB_PORT),
         username: configService.get('DB_USER', envConfig.DB_USER),
@@ -67,7 +80,10 @@ import { User } from './modules/user/user.entity'
     SMTPModule,
     SmsModule,
     AuthModule,
-    UserModule
+    UserModule,
+    OrganizationModule,
+    WikiModule,
+    DocumentModule
   ],
   controllers: [AppController],
   providers: [AppService],

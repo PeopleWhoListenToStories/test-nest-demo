@@ -1,19 +1,7 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  HttpCode,
-  Post,
-  Delete,
-  Patch,
-  Param,
-  Query,
-  Body,
-  UseGuards,
-} from '@nestjs/common'
+import { Controller, Get, HttpStatus, HttpCode, Post,  Delete,  Patch, Param, Query, Body, UseGuards, } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { RolesGuard, Roles } from '../auth/roles.guard'
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { RolesGuard, Roles } from '../../guard/roles.guard'
+import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
 import { SmsService } from './sms.service'
 import { Sms } from './sms.entity'
 

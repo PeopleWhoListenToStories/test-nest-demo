@@ -196,6 +196,9 @@ devDependencies:
   jest:
     specifier: ^27.2.5
     version: 27.5.1(ts-node@10.9.2)
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   prettier:
     specifier: ^2.3.2
     version: 2.8.8

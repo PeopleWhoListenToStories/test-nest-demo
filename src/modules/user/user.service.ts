@@ -4,17 +4,19 @@ import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { HttpService } from '@nestjs/axios'
 import { Repository } from 'typeorm'
+import { instanceToPlain } from 'class-transformer'
 import { map } from 'rxjs/operators'
-import { User, WxLoginDTO, WxInfo } from './user.entity'
 
+import { IUser } from '../../constant'
+import { UserEntity, WxLoginDTO, WxInfo } from './user.entity'
 import { WxBizDataCrypt } from '../../utils/WxBizDataCrypt.util'
 import { config as envConfig } from '../../../config/env'
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly httpService: HttpService,
@@ -30,7 +32,7 @@ export class UserService {
       })
   }
 
-  async findAll(queryParams): Promise<[User[], number]> {
+  async findAll(queryParams): Promise<[UserEntity[], number]> {
     const query = this.userRepository.createQueryBuilder('user').orderBy('user.createAt', 'DESC')
 
     if (typeof queryParams === 'object') {
@@ -57,17 +59,17 @@ export class UserService {
    * 创建用户
    * @param user
    */
-  async createUser(user: Partial<User>): Promise<User> {
+  async createUser(user: Partial<UserEntity>): Promise<UserEntity> {
     const { name, password } = user
 
     if (!name || !password) {
-      throw new HttpException('请输入用户名和密码', HttpStatus.BAD_REQUEST)
+      throw new HttpException('请输入用户名和密码', HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     const existUser = await this.userRepository.findOne({ where: { name } })
 
     if (existUser) {
-      throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST)
+      throw new HttpException('用户已存在', HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     const newUser = await this.userRepository.create(user)
@@ -79,15 +81,15 @@ export class UserService {
    * 用户登录
    * @param user
    */
-  async login(user: Partial<User>): Promise<User> {
+  async login(user: Partial<UserEntity>): Promise<UserEntity> {
     const { name, password } = user
     const existUser = await this.userRepository.findOne({ where: { name } })
 
-    if (!existUser || !(await User.comparePassword(password, existUser.password))) {
+    if (!existUser || !(await UserEntity.comparePassword(password, existUser.password))) {
       throw new HttpException(
         '用户名或密码错误',
         // tslint:disable-next-line: trailing-comma
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       )
     }
 
@@ -95,7 +97,7 @@ export class UserService {
       throw new HttpException(
         '用户已锁定，无法登录',
         // tslint:disable-next-line: trailing-comma
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       )
     }
 
@@ -106,7 +108,7 @@ export class UserService {
    * 微信用户登录
    * @param user
    */
-  async wxLogin(user: WxLoginDTO): Promise<Partial<User>> {
+  async wxLogin(user: WxLoginDTO): Promise<Partial<UserEntity>> {
     const { code, encryptedData, iv } = user
 
     const url = `${envConfig.WX_AUTH_URL}?grant_type=${envConfig.WX_GRANT_TYPE}&appid=${envConfig.WX_APPID}&secret=${envConfig.WX_SECRET}&js_code=${code}`
@@ -131,7 +133,7 @@ export class UserService {
       const pc = new WxBizDataCrypt(envConfig.WX_APPID, infoData.session_key)
       const data: WxInfo = pc.decryptData(encryptedData, iv)
 
-      const newUser: Partial<User> = {}
+      const newUser: Partial<UserEntity> = {}
 
       newUser.code = code
       newUser.isWx = 1
@@ -142,7 +144,7 @@ export class UserService {
       newUser.gender = data.gender
       // 生成一个新的token
       newUser.token = await this.certificate(newUser)
-      const mergeUser = await this.userRepository.merge(newUser as User)
+      const mergeUser = await this.userRepository.merge(newUser as UserEntity)
       this.userRepository.save(mergeUser)
     }
     return Promise.resolve({
@@ -156,18 +158,29 @@ export class UserService {
    * @param openid
    *
    */
-  async findById(id: number, openid?: string): Promise<User> {
+  async findById(id: string, openid?: string): Promise<UserEntity> {
     if (id) {
       return this.userRepository.findOne(id)
     } else {
       return this.userRepository.findOne({ where: { openid } })
     }
   }
+
+  /**
+   * 根据 ids 查询一组用户
+   * @param id
+   * @returns
+   */
+  async findByIds(ids): Promise<IUser[]> {
+    const users = await this.userRepository.findByIds(ids);
+    return users.map((user) => instanceToPlain(user)) as IUser[];
+  }
+  
   /**
    * 更新指定用户
    * @param id
    */
-  async updateById(id, user): Promise<User> {
+  async updateById(id, user): Promise<UserEntity> {
     const oldUser = await this.userRepository.findOne(id)
     delete user.password
 
@@ -177,7 +190,7 @@ export class UserService {
       })
 
       if (existUser) {
-        throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST)
+        throw new HttpException('用户已存在', HttpStatus.INTERNAL_SERVER_ERROR)
       }
     }
 
@@ -189,19 +202,19 @@ export class UserService {
    * 更新指定用户密码
    * @param id
    */
-  async updatePassword(id, user): Promise<User> {
+  async updatePassword(id, user): Promise<UserEntity> {
     const existUser = await this.userRepository.findOne(id)
     const { oldPassword, newPassword } = user
 
-    if (!existUser || !(await User.comparePassword(oldPassword, existUser.password))) {
+    if (!existUser || !(await UserEntity.comparePassword(oldPassword, existUser.password))) {
       throw new HttpException(
         '用户名或密码错误',
         // tslint:disable-next-line: trailing-comma
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       )
     }
 
-    const hashNewPassword = User.encryptPassword(newPassword)
+    const hashNewPassword = UserEntity.encryptPassword(newPassword)
     const newUser = await this.userRepository.merge(existUser, {
       password: hashNewPassword,
     })
@@ -210,7 +223,7 @@ export class UserService {
   }
 
   // 生成微信小程序token
-  async certificate(user: Partial<User>) {
+  async certificate(user: Partial<UserEntity>) {
     const payload = {
       openid: user.openid,
       nickname: user.nickname,
@@ -225,4 +238,15 @@ export class UserService {
       .pipe(map((response) => response))
       .toPromise()
   }
+
+  /**
+   * 根据指定条件查找用户
+   * @param opts
+   * @returns
+   */
+  async findOne(opts: Partial<UserEntity>): Promise<UserEntity> {
+    const user = await this.userRepository.findOne(opts);
+    return user;
+  }
+
 }

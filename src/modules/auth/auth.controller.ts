@@ -1,17 +1,8 @@
-import {
-  Controller,
-  HttpStatus,
-  HttpCode,
-  Post,
-  Body,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  UseGuards,
-} from '@nestjs/common'
+import { Controller, HttpStatus,  HttpCode, Post,  Body,  UseInterceptors, ClassSerializerInterceptor, UseGuards, } from '@nestjs/common'
 import { ApiHeader, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { Roles } from './roles.guard'
-import { JwtAuthGuard } from './jwt-auth.guard'
+import { Roles } from '../../guard/roles.guard'
+import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
 import { UserDTO, WxLoginDTO } from '../user/user.entity'
 
 @ApiTags('Auth 模块')
@@ -53,6 +44,11 @@ export class AuthController {
     return res
   }
 
+  /**
+   * 校验当前是否是管理员
+   * @param user
+   */
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('admin')
   @ApiOperation({
     tags: ['Auth'],
