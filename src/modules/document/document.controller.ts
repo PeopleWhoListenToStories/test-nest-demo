@@ -1,5 +1,5 @@
 import { Controller, Get, Request, Query, Param, HttpCode, HttpStatus, Body, Post, UseGuards, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common'
-import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guard/jwt-auth.guard';
 import { DocumentService } from './document.service';
@@ -27,7 +27,7 @@ export class DocumentController {
   })
   @Get('')
   @HttpCode(HttpStatus.OK)
-  async search (@Request() req, @Param('organizationId') organizationId, @Query('keyword') keyword) {
+  async search (@Request() req, @Query('organizationId') organizationId, @Query('keyword') keyword) {
     return await this.documentService.search(req.user, organizationId, keyword);
   }
 
@@ -49,3 +49,4 @@ export class DocumentController {
     return await this.documentService.createDocument(req.user, dto);
   }
 }
+

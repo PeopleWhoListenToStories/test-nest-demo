@@ -45,9 +45,8 @@ export class OrganizationService {
    * @returns
    */
   public async getPersonalOrganization(user: IUser) {
-    const id = '878e0022-0dd8-4016-89a7-8b8e49d4bb37'
 
-    const organization = await this.organizationRepo.findOne({ createUserId: id || user.id, isPersonal: true });
+    const organization = await this.organizationRepo.findOne({ createUserId: user.id, isPersonal: true });
     return organization;
   }
 
@@ -67,8 +66,7 @@ export class OrganizationService {
    * @returns
    */
   async createOrganization (user: IUser, dto: CreateOrganizationDto) { 
-    const id = '878e0022-0dd8-4016-89a7-8b8e49d4bb37'
-    const [, count] = await this.organizationRepo.findAndCount({ createUserId: id || user.id });
+    const [, count] = await this.organizationRepo.findAndCount({ createUserId: user.id });
 
     if (count >= 5) {
       throw new HttpException('个人可创建组织上限为 5 个', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,12 +74,12 @@ export class OrganizationService {
 
     const data = {
       ...dto,
-      createUserId: id || user.id,
+      createUserId: user.id,
     }
 
     const organization = await this.organizationRepo.save(await this.organizationRepo.create(data));
 
-    await this.authService.createOrUpdateAuth( id || user.id, {
+    await this.authService.createOrUpdateAuth( user.id, {
       auth: AuthEnum.creator,
       organizationId: organization.id,
       wikiId: null,

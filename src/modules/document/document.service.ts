@@ -50,8 +50,7 @@ export class DocumentService {
    * @param keyword
    */
   async search(user, organizationId, keyword) {
-    const id = '878e0022-0dd8-4016-89a7-8b8e49d4bb37'
-    const userId = id || user.id;
+    const userId = user.id;
     const res = await this.documentRepo
       .createQueryBuilder('document')
       .andWhere('document.organizationId = :organizationId')
@@ -86,13 +85,12 @@ export class DocumentService {
    * @returns
    */
   public async createDocument(user: IUser, dto: CreateDocumentDto, isWikiHome = false) {
-    const id = '878e0022-0dd8-4016-89a7-8b8e49d4bb37'
-    await this.authService.canView( id || user.id, {
+    await this.authService.canView(user.id, {
       organizationId: dto.organizationId,
       wikiId: dto.wikiId,
       documentId: null,
     });
-    const [docs] = await this.documentRepo.findAndCount({ createUserId: id || user.id });
+    const [docs] = await this.documentRepo.findAndCount({ createUserId: user.id });
     const maxIndex = docs.length ? Math.max.apply([], docs.map((doc) => +doc.index)) : -1;
 
     let state = EMPTY_DOCUMENT.state;
@@ -111,7 +109,6 @@ export class DocumentService {
       ...dto,
       state,
     };
-    console.log(data)
 
     // if (dto.templateId) {
     //   const template = await this.templateService.findById(dto.templateId);

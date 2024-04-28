@@ -43,15 +43,14 @@ export class WikiService {
    * @returns
    */
   async createWiki(user: IUser, dto: CreateWikiDto) {
-    const id = '878e0022-0dd8-4016-89a7-8b8e49d4bb37'
 
-    await this.authService.canView(id || user.id, {
+    await this.authService.canView(user.id, {
       organizationId: dto.organizationId,
       wikiId: null,
       documentId: null,
     });
 
-    const createUserId = id || user.id;
+    const createUserId = user.id;
     const data = {
       ...dto,
       createUserId,
@@ -63,7 +62,7 @@ export class WikiService {
 
     await Promise.all([
       ...userAuthList
-        .filter((userAuth) => userAuth.userId !== id || user.id)
+        .filter((userAuth) => userAuth.userId !== user.id)
         .map((userAuth) => {
           return this.authService.createOrUpdateAuth(userAuth.userId, {
             auth: userAuth.auth,
@@ -73,7 +72,7 @@ export class WikiService {
           });
         }),
 
-      await this.authService.createOrUpdateAuth(id || user.id, {
+      await this.authService.createOrUpdateAuth(user.id, {
         auth: AuthEnum.creator,
         organizationId: wiki.organizationId,
         wikiId: wiki.id,
