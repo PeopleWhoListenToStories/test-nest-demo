@@ -22,7 +22,7 @@ export class UserService {
     private readonly httpService: HttpService,
   ) {
     const name = this.configService.get('ADMIN_USER', 'admin')
-    const password = this.configService.get('ADMIN_PASSWD', 'admin')
+    const password = this.configService.get('ADMIN_PASSWD', 'nimda')
     this.createUser({ name, password, role: 'admin' })
       .then(() => {
         console.log(`管理员账户创建成功，用户名：${name}，密码：${password}，请及时登录系统修改默认密码`)
@@ -74,7 +74,7 @@ export class UserService {
 
     const newUser = await this.userRepository.create(user)
     await this.userRepository.save(newUser)
-    return newUser
+    return await this.userRepository.findOne({ where:{ name } })
   }
 
   /**

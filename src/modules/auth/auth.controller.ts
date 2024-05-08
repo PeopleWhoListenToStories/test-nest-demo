@@ -1,9 +1,11 @@
-import { Controller, HttpStatus,  HttpCode, Post,  Body,  UseInterceptors, ClassSerializerInterceptor, UseGuards, } from '@nestjs/common'
+import { Controller, HttpStatus,  HttpCode, Get, Res, Post, Request, Body,  UseInterceptors, ClassSerializerInterceptor, UseGuards } from '@nestjs/common'
 import { ApiHeader, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { Roles } from '../../guard/roles.guard'
 import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
 import { UserDTO, WxLoginDTO } from '../user/user.entity'
+
+import { config as envConfig } from '../../../config/env'
 
 @ApiTags('Auth 模块')
 @Controller('auth')
@@ -14,17 +16,28 @@ export class AuthController {
    * 用户登录
    * @param user
    */
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Post('login')
   @ApiOperation({
     tags: ['Auth'],
     summary: '登录',
   })
   @ApiResponse({ status: 200, description: '登录成功' })
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('login')
   async login(@Body() user: UserDTO) {
     const res = await this.authService.login(user)
     return res
+  }
+
+  /**
+   * 微信登录跳转
+   */
+
+  @ApiOperation({ summary: '微信登录跳转' })
+  @Get('wechatLogin')
+  async wechatLogin (@Request() req, @Res() res) {
+    const APPID = envConfig.APPID;
+    res.redirect(`https://open.weixin.qq.com/connect/qrconnect?appid=${APPID}&redirect_uri=${req.redirect}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`);
   }
 
   /**

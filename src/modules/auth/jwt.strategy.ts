@@ -5,6 +5,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { UserEntity } from '../user/user.entity'
 import { AuthService } from './auth.service'
 
+import { config as envConfig } from '../../../config/env'
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
@@ -12,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       // secretOrKey: 'xulai',
       ignoreExpiration: false,
-      secretOrKey: 'xulai',
+      secretOrKey: envConfig.SECRET,
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: RequestType) => {
           const token = request?.cookies?.token;

@@ -24,12 +24,16 @@ export class UserEntity {
   id: string
 
   @ApiProperty()
-  @Column({ name: 'name', default: null, length: 500, comment: '名称' })
+  @Column({ name: 'name', default: null, length: 100, comment: '名称' })
   name: string
 
   @ApiProperty()
+  @Column({ name: 'nickname', default: null, length: 100, comment: '昵称' })
+  nickname: string
+
+  @ApiProperty()
   @Exclude()
-  @Column({ name: 'password', default: null, length: 500, comment: '密码' })
+  @Column({ name: 'password', default: null, length: 100, comment: '密码' })
   password: string
 
   @ApiProperty()
@@ -63,10 +67,6 @@ export class UserEntity {
   @ApiProperty()
   @Column({ name: 'token', default: null, comment: '小程序用户token' })
   token: string
-
-  @ApiProperty()
-  @Column({ name: 'nick_name', default: null, comment: '小程序用户nickname' })
-  nickname: string
 
   @ApiProperty()
   @Column({ name: 'gender', default: null, comment: '小程序用户gender' })

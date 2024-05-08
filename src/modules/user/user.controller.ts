@@ -1,6 +1,6 @@
-import { Controller, Get, HttpStatus, HttpCode, Post, Query, Body, Request, UseGuards, UseInterceptors, HttpException, ClassSerializerInterceptor } from '@nestjs/common'
+import { Controller, Get, HttpStatus, HttpCode, Post, Query, Body, Request, UseGuards, UseInterceptors, HttpException, ClassSerializerInterceptor, Req } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { ApiTags, ApiResponse, ApiOperation, ApiHeader } from '@nestjs/swagger'
+import { ApiTags, ApiResponse, ApiOperation, ApiHeader, ApiBearerAuth } from '@nestjs/swagger'
 import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
 import { Roles } from '../../guard/roles.guard'
 import { UserService } from './user.service'
@@ -125,5 +125,19 @@ export class UserController {
     await this.checkPermission(req, user)
     const d = await this.userService.updatePassword(user.id, user)
     return d
+  }
+
+  /**
+   * 获取用户信息
+   */
+  @ApiResponse({ status: 200, description: '获取用户信息', type: [UserEntity] })
+  @ApiOperation({ tags: ['User'], summary: '获取用户信息' })
+  @ApiBearerAuth() // swagger文档设置token
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getUserInfo(@Req() req) {
+    return req.user
   }
 }
