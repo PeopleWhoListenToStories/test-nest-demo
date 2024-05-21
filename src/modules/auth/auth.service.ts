@@ -82,12 +82,11 @@ export class AuthService {
    */
   async canView(userId: IUser['id'], dto: Omit<AuthDto, 'auth'>) {
     const conditions: Partial<AuthEntity> = {
-      userId: '878e0022-0dd8-4016-89a7-8b8e49d4bb37' || userId,
+      userId: userId,
       organizationId: dto.organizationId,
       wikiId: dto.wikiId || null,
       documentId: dto.documentId || null,
     }
-    console.log(`%c 🎠 🚀 : AuthService -> canView -> conditions `, `font-size:14px;background-color:#84d71f;color:black;`, conditions);
 
     const userAuth = await this.authRepo.findOne(conditions);
 

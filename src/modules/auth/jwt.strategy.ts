@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable, UnauthorizedException, forwardRef } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
-import { Request as RequestType } from 'express';
+import { Request as RequestType } from 'express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { UserEntity } from '../user/user.entity'
 import { AuthService } from './auth.service'
@@ -8,19 +8,18 @@ import { AuthService } from './auth.service'
 import { config as envConfig } from '../../../config/env'
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  constructor(@Inject(forwardRef(() => AuthService)) private readonly authService: AuthService) {
     super({
-      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      // secretOrKey: 'xulai',
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: envConfig.JWT_SECRET,
       ignoreExpiration: false,
-      secretOrKey: envConfig.SECRET,
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: RequestType) => {
-          const token = request?.cookies?.token;
-          return token;
-        },
-      ]),
+      // jwtFromRequest: ExtractJwt.fromExtractors([
+      //   (request: RequestType) => {
+      //     const token = request?.cookies?.token
+      //     return token
+      //   },
+      // ]),
     })
   }
 

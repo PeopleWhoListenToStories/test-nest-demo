@@ -55,11 +55,11 @@ async function bootstrap() {
     // customCssUrl: `${envConfig.SWAGGER_CND_URL}/swagger-ui.css`,
     // customJs: `${envConfig.SWAGGER_CND_URL}/swagger-ui-bundle.js,
     // ${envConfig.SWAGGER_CND_URL}/swagger-ui-standalone-preset.js`,
-    customCssUrl: ['https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.6.2/swagger-ui.css'],
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.0/swagger-ui-bundle.js',
-      'https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.6.2/swagger-ui-standalone-preset.js',
-    ],
+    // customCssUrl: ['https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.6.2/swagger-ui.css'],
+    // customJs: [
+    //   'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.0/swagger-ui-bundle.js',
+    //   'https://cdn.bootcdn.net/ajax/libs/swagger-ui/5.6.2/swagger-ui-standalone-preset.js',
+    // ],
     customSiteTitle: '',
     swaggerOptions: {
       explorer: true,
