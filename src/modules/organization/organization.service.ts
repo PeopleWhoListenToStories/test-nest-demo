@@ -108,24 +108,24 @@ export class OrganizationService {
     return await this.organizationRepo.save(await this.organizationRepo.merge(oldData, dto));
   }
 
-  // /**
-  //  * 删除组织
-  //  * @param user
-  //  * @param organizationId
-  //  * @returns
-  //  */
-  // async deleteOrganization(user: IUser, organizationId) {
-  //   const organization = await this.organizationRepo.findOne(organizationId);
-  //   await this.authService.canDelete(user.id, {
-  //     organizationId: organization.id,
-  //     wikiId: null,
-  //     documentId: null,
-  //   });
-  //   await this.wikiService.deleteOrganizationWiki(user, organizationId);
-  //   await this.organizationRepo.remove(organization);
-  //   await this.authService.deleteOrganization(organization.id);
-  //   return organization;
-  // }
+  /**
+   * 删除组织
+   * @param user
+   * @param organizationId
+   * @returns
+   */
+  async deleteOrganization(user: IUser, organizationId) {
+    const organization = await this.organizationRepo.findOne(organizationId);
+    await this.authService.canDelete(user.id, {
+      organizationId: organization.id,
+      wikiId: null,
+      documentId: null,
+    });
+    // await this.wikiService.deleteOrganizationWiki(user, organizationId);
+    await this.organizationRepo.remove(organization);
+    await this.authService.deleteOrganization(organization.id);
+    return organization;
+  }
 
   /**
    * 获取组织成员
@@ -161,120 +161,120 @@ export class OrganizationService {
     return { data: withUserData, total };
   }
 
-  // /**
-  //  * 添加组织成员
-  //  * @param user
-  //  * @param wikiId
-  //  * @param dto
-  //  * @returns
-  //  */
-  // async addMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
-  //   const organization = await this.organizationRepo.findOne(organizationId);
+  /**
+   * 添加组织成员
+   * @param user
+   * @param wikiId
+   * @param dto
+   * @returns
+   */
+  async addMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
+    const organization = await this.organizationRepo.findOne(organizationId);
 
-  //   if (!organization) {
-  //     throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
-  //   }
+    if (!organization) {
+      throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
+    }
 
-  //   const targetUser = await this.userService.findOne({ name: dto.userName });
+    const targetUser = await this.userService.findOne({ name: dto.userName });
 
-  //   if (!targetUser) {
-  //     throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
-  //   }
+    if (!targetUser) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
 
-  //   const ret = await this.authService.createOrUpdateOtherUserAuth(user.id, targetUser.id, {
-  //     auth: dto.userAuth,
-  //     organizationId: organization.id,
-  //     wikiId: null,
-  //     documentId: null,
-  //   });
+    const ret = await this.authService.createOrUpdateOtherUserAuth(user.id, targetUser.id, {
+      auth: dto.userAuth,
+      organizationId: organization.id,
+      wikiId: null,
+      documentId: null,
+    });
 
-  //   await this.messageService.notify(targetUser.id, {
-  //     title: `您被添加到组织「${organization.name}」`,
-  //     message: `您被添加到知识库「${organization.name}」，快去看看吧！`,
-  //     url: buildMessageURL('toOrganization')({
-  //       organizationId: organization.id,
-  //     }),
-  //     uniqueId: organization.id,
-  //   });
+    // await this.messageService.notify(targetUser.id, {
+    //   title: `您被添加到组织「${organization.name}」`,
+    //   message: `您被添加到知识库「${organization.name}」，快去看看吧！`,
+    //   url: buildMessageURL('toOrganization')({
+    //     organizationId: organization.id,
+    //   }),
+    //   uniqueId: organization.id,
+    // });
 
-  //   return ret;
-  // }
+    return ret;
+  }
 
-  // /**
-  //  * 修改组织成员
-  //  * @param user
-  //  * @param wikiId
-  //  * @param dto
-  //  * @returns
-  //  */
-  // async updateMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
-  //   const organization = await this.organizationRepo.findOne(organizationId);
+  /**
+   * 修改组织成员
+   * @param user
+   * @param wikiId
+   * @param dto
+   * @returns
+   */
+  async updateMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
+    const organization = await this.organizationRepo.findOne(organizationId);
 
-  //   if (!organization) {
-  //     throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
-  //   }
+    if (!organization) {
+      throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
+    }
 
-  //   const targetUser = await this.userService.findOne({ name: dto.userName });
+    const targetUser = await this.userService.findOne({ name: dto.userName });
 
-  //   if (!targetUser) {
-  //     throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
-  //   }
+    if (!targetUser) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
 
-  //   const ret = await this.authService.createOrUpdateOtherUserAuth(user.id, targetUser.id, {
-  //     auth: dto.userAuth,
-  //     organizationId: organization.id,
-  //     wikiId: null,
-  //     documentId: null,
-  //   });
+    const ret = await this.authService.createOrUpdateOtherUserAuth(user.id, targetUser.id, {
+      auth: dto.userAuth,
+      organizationId: organization.id,
+      wikiId: null,
+      documentId: null,
+    });
 
-  //   await this.messageService.notify(targetUser.id, {
-  //     title: `组织「${organization.name}」权限变更`,
-  //     message: `您在组织「${organization.name}」权限已变更，快去看看吧！`,
-  //     url: buildMessageURL('toOrganization')({
-  //       organizationId: organization.id,
-  //     }),
-  //     uniqueId: organization.id,
-  //   });
+    // await this.messageService.notify(targetUser.id, {
+    //   title: `组织「${organization.name}」权限变更`,
+    //   message: `您在组织「${organization.name}」权限已变更，快去看看吧！`,
+    //   url: buildMessageURL('toOrganization')({
+    //     organizationId: organization.id,
+    //   }),
+    //   uniqueId: organization.id,
+    // });
 
-  //   return ret;
-  // }
+    return ret;
+  }
 
-  // /**
-  //  * 删除组织成员
-  //  * @param user
-  //  * @param wikiId
-  //  * @param dto
-  //  * @returns
-  //  */
-  // async deleteMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
-  //   const organization = await this.organizationRepo.findOne(organizationId);
+  /**
+   * 删除组织成员
+   * @param user
+   * @param wikiId
+   * @param dto
+   * @returns
+   */
+  async deleteMember(user: UserEntity, organizationId, dto: OperateUserAuthDto) {
+    const organization = await this.organizationRepo.findOne(organizationId);
 
-  //   if (!organization) {
-  //     throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
-  //   }
+    if (!organization) {
+      throw new HttpException('组织不存在', HttpStatus.NOT_FOUND);
+    }
 
-  //   const targetUser = await this.userService.findOne({ name: dto.userName });
+    const targetUser = await this.userService.findOne({ name: dto.userName });
 
-  //   if (!targetUser) {
-  //     throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
-  //   }
+    if (!targetUser) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
 
-  //   const ret = await this.authService.deleteOtherUserAuth(user.id, targetUser.id, {
-  //     auth: dto.userAuth,
-  //     organizationId: organization.id,
-  //     wikiId: null,
-  //     documentId: null,
-  //   });
+    const ret = await this.authService.deleteOtherUserAuth(user.id, targetUser.id, {
+      auth: dto.userAuth,
+      organizationId: organization.id,
+      wikiId: null,
+      documentId: null,
+    });
 
-  //   await this.messageService.notify(targetUser.id, {
-  //     title: `组织「${organization.name}」权限收回`,
-  //     message: `您在组织「${organization.name}」权限已收回！`,
-  //     url: buildMessageURL('toOrganization')({
-  //       organizationId: organization.id,
-  //     }),
-  //     uniqueId: organization.id,
-  //   });
+    // await this.messageService.notify(targetUser.id, {
+    //   title: `组织「${organization.name}」权限收回`,
+    //   message: `您在组织「${organization.name}」权限已收回！`,
+    //   url: buildMessageURL('toOrganization')({
+    //     organizationId: organization.id,
+    //   }),
+    //   uniqueId: organization.id,
+    // });
 
-  //   return ret;
-  // }
+    return ret;
+  }
 }

@@ -18,7 +18,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: '获取用户列表', type: [UserEntity] })
   @ApiResponse({ status: 403, description: '无权获取用户列表' })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get()
+  @Get('/list')
   @ApiOperation({
     tags: ['User'],
     summary: '获取用户列表',
@@ -41,7 +41,7 @@ export class UserController {
    */
   @ApiResponse({ status: 200, description: '创建用户', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post('register')
+  @Post('/register')
   @ApiOperation({
     tags: ['User'],
     summary: '注册用户',
@@ -87,7 +87,7 @@ export class UserController {
    */
   @ApiResponse({ status: 200, description: '更新用户成功', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post('update')
+  @Post('/update')
   @ApiOperation({
     tags: ['User'],
     summary: '用户更新',
@@ -110,7 +110,7 @@ export class UserController {
    */
   @ApiResponse({ status: 200, description: '更新密码成功', type: [UserEntity] })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post('password')
+  @Post('/password')
   @ApiOperation({
     tags: ['User'],
     summary: '更新用户密码',

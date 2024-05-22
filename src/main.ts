@@ -36,7 +36,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
   app.useGlobalFilters(new HttpResponseExceptionFilter());
   app.useGlobalInterceptors(new HttpResponseTransformInterceptor());
-  app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix(envConfig.SWAGGER_ENDPOINT_PREFIX || '/');
 
     // DocumentBuilder是一个辅助类，有助于结构的基本文件SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。

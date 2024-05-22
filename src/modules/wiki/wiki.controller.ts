@@ -1,12 +1,13 @@
 import { Controller, Request, Param, ClassSerializerInterceptor, UseInterceptors, Get, HttpCode, HttpStatus, UseGuards, Post, Body } from "@nestjs/common";
-import { ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../guard/jwt-auth.guard";
 import { WikiService } from "./wiki.service";
 import { CreateWikiDto } from "./create-wiki.dto";
 
-@ApiTags('wiki 模块')
+@ApiTags('Wiki 模块')
 @Controller('wiki')
+@ApiBearerAuth()
 export class WikiController {
   constructor(private readonly wikiService: WikiService) {}
 
@@ -16,12 +17,12 @@ export class WikiController {
    * @param pagination
    * @returns
    */
-  @UseInterceptors(ClassSerializerInterceptor)
-  @ApiOperation({ summary: '获取用户所有知识库（创建的、参与的）' })
-  @ApiHeader({ name: 'Authoriation', required: true, description: '本次请求请带上token', })
+  @ApiOperation({ tags: ['Wiki'], summary: '获取用户所有知识库（创建的、参与的）' })
+  @ApiParam({ name: 'organizationId', type: String, description: '组织ID' })
   @Get('list/all/:organizationId')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
   async getAllWikis(@Request() req, @Param('organizationId') organizationId) {
     return await this.wikiService.getAllWikis(req.user, organizationId);
   }
@@ -32,12 +33,12 @@ export class WikiController {
    * @param pagination
    * @returns
    */
-  @UseInterceptors(ClassSerializerInterceptor)
-  @ApiOperation({ summary: '获取用户拥有的知识库（一般是创建的，尚未实现知识库转移）' })
-  @ApiHeader({ name: 'Authoriation', required: true, description: '本次请求请带上token', })
+  @ApiOperation({ tags: ['Wiki'], summary: '获取用户拥有的知识库（一般是创建的，尚未实现知识库转移）' })
+  @ApiParam({ name: 'organizationId', type: String, description: '组织ID' })
   @Get('list/own/:organizationId')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
   async getOwnWikis(@Request() req, @Param('organizationId') organizationId) {
     return await this.wikiService.getOwnWikis(req.user, organizationId);
   }
@@ -50,10 +51,11 @@ export class WikiController {
    */
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取用户参与的知识库' })
-  @ApiHeader({ name: 'Authoriation', required: true, description: '本次请求请带上token', })
+  @ApiParam({ name: 'organizationId', type: String, description: '组织ID' })
   @Get('list/join/:organizationId')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
   async getJoinWikis(@Request() req, @Param('organizationId') organizationId) {
     return await this.wikiService.getJoinWikis(req.user, organizationId);
   }
@@ -66,7 +68,7 @@ export class WikiController {
    */
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '新建知识库' })
-  @ApiHeader({ name: 'Authoriation', required: true, description: '本次请求请带上token', })
+  @ApiBody({ type: CreateWikiDto, description: 'the wiki data' })
   @Post('add')
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtAuthGuard)
