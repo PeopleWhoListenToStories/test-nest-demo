@@ -5,6 +5,7 @@ import { DocumentController } from './document.controller'
 import { Document } from './document.entity';
 import { DocumentService } from './document.service';
 import { AuthModule } from '../auth/auth.module';
+import { WikiModule } from '../wiki/wiki.module';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => AuthModule),
     // forwardRef(() => ConfigModule),
     // forwardRef(() => UserModule),
-    // forwardRef(() => WikiModule),
+    forwardRef(() => WikiModule),
     // forwardRef(() => MessageModule),
     // forwardRef(() => TemplateModule),
     // forwardRef(() => StarModule),

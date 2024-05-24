@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs'
 import { IsNotEmpty } from 'class-validator'
 import { UserStatus } from '../../constant'
 
-@Entity()
+@Entity('user')
 export class UserEntity {
   /**
    * 检测密码是否一致

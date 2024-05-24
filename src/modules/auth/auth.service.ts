@@ -2,16 +2,15 @@ import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from '@nest
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import * as lodash from 'lodash';
+import * as lodash from 'lodash'
 
-import { IWiki, IOrganization, IPagination } from '../../constant/index'
+import { IWiki, IOrganization, IPagination, IDocument } from '../../constant/index'
 import { UserEntity, WxLoginDTO } from '../user/user.entity'
 import { UserService } from '../user/user.service'
 import { AuthEnum, IUser } from '../../constant'
 import { AuthDto } from './auth.dto'
 import { AuthEntity } from './auth.entity'
-import { instanceToPlain } from 'class-transformer';
-
+import { instanceToPlain } from 'class-transformer'
 
 @Injectable()
 export class AuthService {
@@ -30,9 +29,9 @@ export class AuthService {
    * @returns
    */
   public async getAuth(userId: IUser['id'], dto: Omit<AuthDto, 'auth'>) {
-    const conditions = { userId, ...dto };
-    const userAuth = await this.authRepo.findOne(conditions);
-    return userAuth;
+    const conditions = { userId, ...dto }
+    const userAuth = await this.authRepo.findOne(conditions)
+    return userAuth
   }
 
   createToken(user: Partial<UserEntity>) {
@@ -61,7 +60,7 @@ export class AuthService {
   }
 
   async validateUser(payload: UserEntity) {
-    return await this.findById(payload.id);
+    return await this.findById(payload.id)
   }
 
   /**
@@ -70,8 +69,8 @@ export class AuthService {
    * @returns
    */
   async findById(id): Promise<IUser> {
-    const user = await this.userService.findOne(id);
-    return instanceToPlain(user) as IUser;
+    const user = await this.userService.findOne(id)
+    return instanceToPlain(user) as IUser
   }
 
   /**
@@ -88,13 +87,43 @@ export class AuthService {
       documentId: dto.documentId || null,
     }
 
-    const userAuth = await this.authRepo.findOne(conditions);
+    const userAuth = await this.authRepo.findOne(conditions)
 
     if (!userAuth || userAuth.auth === AuthEnum.noAccess) {
-      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN);
+      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN)
     }
 
-    return userAuth;
+    return userAuth
+  }
+
+  /**
+   * 删除文档
+   * 注意：该方法是直接删除，可调用 canDelete 判断是否可删除
+   * @param organizationId
+   * @param wikiId
+   * @param documentId
+   */
+  async deleteDocument(organizationId: IOrganization['id'], wikiId: IWiki['id'], documentId: IDocument['id']) {
+    const res = await this.authRepo.find({
+      organizationId,
+      wikiId,
+      documentId,
+    })
+    await this.authRepo.remove(res)
+  }
+
+  /**
+   * 删除知识库
+   * 注意：该方法是直接删除，可调用 canDelete 判断是否可删除
+   * @param organizationId
+   * @param wikiId
+   */
+  async deleteWiki(organizationId: IOrganization['id'], wikiId: IWiki['id']) {
+    const res = await this.authRepo.find({
+      organizationId,
+      wikiId,
+    })
+    await this.authRepo.remove(res)
   }
 
   /**
@@ -104,12 +133,12 @@ export class AuthService {
    * @returns
    */
   public async createOrUpdateAuth(userId: IUser['id'], auth: AuthDto) {
-    const targetAuth = auth.auth;
-    delete auth.auth;
-    const wrappedAuth = { userId, ...auth};
-    const oldAuth = await this.authRepo.findOne(wrappedAuth);
+    const targetAuth = auth.auth
+    delete auth.auth
+    const wrappedAuth = { userId, ...auth }
+    const oldAuth = await this.authRepo.findOne(wrappedAuth)
 
-    let newAuth: AuthEntity;
+    let newAuth: AuthEntity
 
     if (oldAuth) {
       newAuth = await this.authRepo.save(await this.authRepo.merge(oldAuth, wrappedAuth, { auth: targetAuth }))
@@ -119,7 +148,7 @@ export class AuthService {
 
     if (newAuth.organizationId && !newAuth.wikiId && !newAuth.documentId) {
       // 用户被添加到组织，在组织内添加对应权限
-      const wikiAuthList = await this.getWikisInOrganization(newAuth.organizationId);
+      const wikiAuthList = await this.getWikisInOrganization(newAuth.organizationId)
       await Promise.all(
         wikiAuthList.map((wikiAuth) => {
           return this.createOrUpdateAuth(newAuth.userId, {
@@ -127,12 +156,12 @@ export class AuthService {
             organizationId: newAuth.organizationId,
             wikiId: wikiAuth.wikiId,
             documentId: null,
-          });
-        })
-      );
+          })
+        }),
+      )
     } else if (newAuth.organizationId && newAuth.wikiId && !newAuth.documentId) {
       // 用户被添加到知识库，在知识库内添加对应权限
-      const docsAuthList = await this.getDocumentsInWiki(newAuth.organizationId, newAuth.wikiId);
+      const docsAuthList = await this.getDocumentsInWiki(newAuth.organizationId, newAuth.wikiId)
       await Promise.all(
         docsAuthList.map((auth) => {
           return this.createOrUpdateAuth(newAuth.userId, {
@@ -140,9 +169,9 @@ export class AuthService {
             organizationId: newAuth.organizationId,
             wikiId: newAuth.wikiId,
             documentId: auth.documentId,
-          });
-        })
-      );
+          })
+        }),
+      )
     }
   }
 
@@ -157,9 +186,9 @@ export class AuthService {
       .andWhere('auth.wikiId is NOT NULL')
       .andWhere('auth.documentId is NULL')
       .setParameter('organizationId', organizationId)
-      .getMany();
+      .getMany()
 
-    return lodash.uniqBy(data || [], (w) => w.wikiId);
+    return lodash.uniqBy(data || [], (w) => w.wikiId)
   }
 
   /**
@@ -179,16 +208,16 @@ export class AuthService {
       .andWhere('auth.wikiId=:wikiId')
       .andWhere('auth.documentId is NULL')
       .setParameter('organizationId', organizationId)
-      .setParameter('wikiId', wikiId);
+      .setParameter('wikiId', wikiId)
 
     if (pagination) {
-      const { page = 1, pageSize = 12 } = pagination;
-      query.skip((+page - 1) * +pageSize);
-      query.take(+pageSize);
+      const { page = 1, pageSize = 12 } = pagination
+      query.skip((+page - 1) * +pageSize)
+      query.take(+pageSize)
     }
-    const [data, total] = await query.getManyAndCount();
+    const [data, total] = await query.getManyAndCount()
 
-    return { data: data || [], total };
+    return { data: data || [], total }
   }
 
   /**
@@ -206,11 +235,11 @@ export class AuthService {
       .andWhere('auth.documentId is NULL')
       .setParameter('userId', userId)
       .setParameter('organizationId', organizationId)
-      .getManyAndCount();
+      .getManyAndCount()
 
-    return { data: data || [], total };
+    return { data: data || [], total }
   }
-  
+
   /**
    * 获取用户在指定组织创建的知识库列表
    * @param userId
@@ -225,9 +254,9 @@ export class AuthService {
       .setParameter('auth', AuthEnum.creator)
       .setParameter('userId', userId)
       .setParameter('organizationId', organizationId)
-      .getManyAndCount();
+      .getManyAndCount()
 
-    return { data: data || [], total };
+    return { data: data || [], total }
   }
 
   /**
@@ -243,9 +272,9 @@ export class AuthService {
       .andWhere('auth.documentId is NULL')
       .setParameter('userId', userId)
       .setParameter('organizationId', organizationId)
-      .getManyAndCount();
+      .getManyAndCount()
 
-    return { data: data || [], total };
+    return { data: data || [], total }
   }
 
   /**
@@ -261,9 +290,9 @@ export class AuthService {
       .andWhere('auth.documentId IS NOT NULL')
       .setParameter('organizationId', organizationId)
       .setParameter('wikiId', wikiId)
-      .getMany();
+      .getMany()
 
-    return data;
+    return data
   }
 
   /**
@@ -278,9 +307,9 @@ export class AuthService {
       .andWhere('auth.documentId IS NOT NULL')
       .setParameter('organizationId', organizationId)
       .setParameter('wikiId', wikiId)
-      .getMany();
+      .getMany()
 
-    return lodash.uniqBy(data || [], (w) => w.documentId);
+    return lodash.uniqBy(data || [], (w) => w.documentId)
   }
 
   /**
@@ -295,15 +324,15 @@ export class AuthService {
       organizationId: dto.organizationId,
       wikiId: dto.wikiId || null,
       documentId: dto.documentId || null,
-    };
-
-    const userAuth = await this.authRepo.findOne(conditions);
-
-    if (!userAuth || ![AuthEnum.creator, AuthEnum.admin].includes(userAuth.auth)) {
-      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN);
     }
 
-    return userAuth;
+    const userAuth = await this.authRepo.findOne(conditions)
+
+    if (!userAuth || ![AuthEnum.creator, AuthEnum.admin].includes(userAuth.auth)) {
+      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN)
+    }
+
+    return userAuth
   }
 
   /**
@@ -318,15 +347,15 @@ export class AuthService {
       organizationId: dto.organizationId,
       wikiId: dto.wikiId || null,
       documentId: dto.documentId || null,
-    };
-
-    const userAuth = await this.authRepo.findOne(conditions);
-
-    if (!userAuth || ![AuthEnum.creator].includes(userAuth.auth)) {
-      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN);
     }
 
-    return userAuth;
+    const userAuth = await this.authRepo.findOne(conditions)
+
+    if (!userAuth || ![AuthEnum.creator].includes(userAuth.auth)) {
+      throw new HttpException('您没有权限', HttpStatus.FORBIDDEN)
+    }
+
+    return userAuth
   }
 
   /**
@@ -341,9 +370,9 @@ export class AuthService {
       .andWhere('auth.wikiId is NULL')
       .andWhere('auth.documentId is NULL')
       .setParameter('userId', userId)
-      .getMany();
+      .getMany()
 
-    return (data || []).map((d) => d.organizationId);
+    return (data || []).map((d) => d.organizationId)
   }
 
   /**
@@ -361,19 +390,19 @@ export class AuthService {
       .andWhere('auth.organizationId=:organizationId')
       .andWhere('auth.wikiId is NULL')
       .andWhere('auth.documentId is NULL')
-      .setParameter('organizationId', organizationId);
+      .setParameter('organizationId', organizationId)
 
     if (pagination) {
-      const { page = 1, pageSize = 12 } = pagination;
-      query.skip((+page - 1) * +pageSize);
-      query.take(+pageSize);
+      const { page = 1, pageSize = 12 } = pagination
+      query.skip((+page - 1) * +pageSize)
+      query.take(+pageSize)
     }
 
-    const [data, total] = await query.getManyAndCount();
+    const [data, total] = await query.getManyAndCount()
 
-    return { data: data || [], total };
+    return { data: data || [], total }
   }
-  
+
   /**
    * 删除组织
    * 注意：该方法是直接删除，可调用 canDelete 判断是否可删除
@@ -382,8 +411,8 @@ export class AuthService {
   async deleteOrganization(organizationId: IOrganization['id']) {
     const res = await this.authRepo.find({
       organizationId,
-    });
-    await this.authRepo.remove(res);
+    })
+    await this.authRepo.remove(res)
   }
 
   /**
@@ -393,55 +422,55 @@ export class AuthService {
    * @param dto
    */
   private async operateOtherUserAuth(currentUserId: IUser['id'], targetUserId: IUser['id'], dto: AuthDto) {
-    const targetUser = await this.userService.findOne({ id: targetUserId });
+    const targetUser = await this.userService.findOne({ id: targetUserId })
 
     if (!targetUser) {
-      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND)
     }
 
     const conditions: Partial<AuthEntity> = {
       organizationId: dto.organizationId,
       wikiId: dto.wikiId || null,
       documentId: dto.documentId || null,
-    };
+    }
 
     const currentUserAuth = await this.authRepo.findOne({
       userId: currentUserId,
       ...conditions,
-    });
+    })
 
     if (!currentUserAuth) {
-      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN);
+      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN)
     }
 
     // 仅创建者、管理员可操作他人权限
     if (![AuthEnum.creator, AuthEnum.admin].includes(currentUserAuth.auth)) {
-      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN);
+      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN)
     }
 
     // 仅创建者可赋予他人创建者、管理员权限
     if ([AuthEnum.creator, AuthEnum.admin].includes(dto.auth) && currentUserAuth.auth !== AuthEnum.creator) {
-      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN);
+      throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN)
     }
 
     const maybeTargetUserAuth = await this.authRepo.findOne({
       userId: targetUserId,
       ...conditions,
-    });
+    })
 
     if (maybeTargetUserAuth) {
       // 对方是创建者，无权操作
       if (maybeTargetUserAuth.auth === AuthEnum.creator) {
-        throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN);
+        throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN)
       }
 
       // 对方是管理员，仅创建者可操作
       if (maybeTargetUserAuth.auth === AuthEnum.admin && currentUserAuth.auth !== AuthEnum.creator) {
-        throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN);
+        throw new HttpException('您没有权限操作', HttpStatus.FORBIDDEN)
       }
     }
   }
-  
+
   /**
    * 删除他人权限
    * @param currentUserId
@@ -449,7 +478,7 @@ export class AuthService {
    * @param dto
    */
   async deleteOtherUserAuth(currentUserId: IUser['id'], targetUserId: IUser['id'], dto: AuthDto) {
-    await this.operateOtherUserAuth(currentUserId, targetUserId, dto);
+    await this.operateOtherUserAuth(currentUserId, targetUserId, dto)
 
     const conditions: Partial<AuthEntity> = {
       userId: targetUserId,
@@ -457,26 +486,26 @@ export class AuthService {
       organizationId: dto.organizationId,
       wikiId: dto.wikiId || null,
       documentId: dto.documentId || null,
-    };
+    }
 
-    const targetUserAuth = await this.authRepo.findOne(conditions);
-    await this.authRepo.remove(targetUserAuth);
+    const targetUserAuth = await this.authRepo.findOne(conditions)
+    await this.authRepo.remove(targetUserAuth)
 
     if (targetUserAuth.organizationId && !targetUserAuth.wikiId && !targetUserAuth.documentId) {
       // 用户被从组织删除，需要删除在组织内的所有权限
       const res = await this.authRepo.find({
         userId: targetUserAuth.userId,
         organizationId: targetUserAuth.organizationId,
-      });
-      await this.authRepo.remove(res);
+      })
+      await this.authRepo.remove(res)
     } else if (targetUserAuth.organizationId && targetUserAuth.wikiId && !targetUserAuth.documentId) {
       // 用户被从知识库删除，需要删除在知识库的所有权限
       const res = await this.authRepo.find({
         userId: targetUserAuth.userId,
         organizationId: targetUserAuth.organizationId,
         wikiId: targetUserAuth.wikiId,
-      });
-      await this.authRepo.remove(res);
+      })
+      await this.authRepo.remove(res)
     }
   }
 
@@ -487,7 +516,7 @@ export class AuthService {
    * @param dto
    */
   async createOrUpdateOtherUserAuth(currentUserId: IUser['id'], targetUserId: IUser['id'], dto: AuthDto) {
-    await this.operateOtherUserAuth(currentUserId, targetUserId, dto);
-    await this.createOrUpdateAuth(targetUserId, dto);
+    await this.operateOtherUserAuth(currentUserId, targetUserId, dto)
+    await this.createOrUpdateAuth(targetUserId, dto)
   }
 }
