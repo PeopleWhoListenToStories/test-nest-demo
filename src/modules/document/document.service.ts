@@ -9,15 +9,23 @@ import { Document } from './document.entity'
 import { AuthService } from '../auth/auth.service'
 import { WikiService } from '../wiki/wiki.service'
 import { ShareDocumentDto } from './share-document.dto'
+import { CollaborationService } from '../collaboration/collaboration.service'
+import { UserService } from '../user/user.service'
+import { ConfigService } from '@nestjs/config'
+import { TemplateService } from '../template/template.service'
+import { DocumentVersionService } from './document-version.service';
 
 @Injectable()
 export class DocumentService {
+  private collaborationService: CollaborationService
+  private documentVersionService: DocumentVersionService;
+
   constructor(
     @InjectRepository(Document)
     public readonly documentRepo: Repository<Document>,
 
-    // @Inject(forwardRef(() => ConfigService))
-    // private readonly configService: ConfigService,
+    @Inject(forwardRef(() => ConfigService))
+    private readonly configService: ConfigService,
 
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
@@ -25,24 +33,43 @@ export class DocumentService {
     // @Inject(forwardRef(() => MessageService))
     // private readonly messageService: MessageService,
 
-    // @Inject(forwardRef(() => UserService))
-    // private readonly userService: UserService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
 
     @Inject(forwardRef(() => WikiService))
-    private readonly wikiService: WikiService, // @Inject(forwardRef(() => TemplateService))
-  ) // private readonly templateService: TemplateService,
+    private readonly wikiService: WikiService,
 
-  // @Inject(forwardRef(() => ViewService))
-  // private readonly viewService: ViewService
+    @Inject(forwardRef(() => TemplateService))
+    private readonly templateService: TemplateService,
+
+    // @Inject(forwardRef(() => ViewService))
+    // private readonly viewService: ViewService
+  ) 
   {
-    // this.documentVersionService = new DocumentVersionService(this.userService);
-    // this.collaborationService = new CollaborationService(
-    //   this.userService,
-    //   this,
-    //   this.templateService,
-    //   this.documentVersionService,
-    //   this.configService
-    // );
+    this.documentVersionService = new DocumentVersionService(this.userService);
+    this.collaborationService = new CollaborationService(this.userService, this, this.templateService, this.documentVersionService, this.configService)
+  }
+
+  /**
+   * 按 id 查取文档
+   * @param user
+   * @param dto
+   * @returns
+   */
+  public async findById(id: string): Promise<Partial<Document>> {
+    const document = await this.documentRepo.findOne(id)
+    return instanceToPlain(document)
+  }
+
+  /**
+   * 按 id 查取一组文档
+   * @param user
+   * @param dto
+   * @returns
+   */
+  public async findByIds(ids: string[]): Promise<Array<Partial<Document>>> {
+    const documents = await this.documentRepo.findByIds(ids)
+    return documents.map((doc) => instanceToPlain(doc))
   }
 
   /**
@@ -230,5 +257,47 @@ export class DocumentService {
     })
     const ret = await this.documentRepo.save(newData)
     return ret
+  }
+
+  /**
+   * 获取指定用户在指定文档的权限
+   * @param userId
+   * @param documentId
+   * @returns
+   */
+  public async getDocumentUserAuth(userId, documentId) {
+    const document = await this.documentRepo.findOne(documentId)
+    const authority = await this.authService.getAuth(userId, {
+      organizationId: document.organizationId,
+      wikiId: document.wikiId,
+      documentId: document.id,
+    })
+
+    return {
+      ...authority,
+      readable: [AuthEnum.creator, AuthEnum.admin, AuthEnum.member].includes(authority.auth),
+      editable: [AuthEnum.creator, AuthEnum.admin].includes(authority.auth),
+    }
+  }
+
+  /**
+   * 更新文档
+   * @param user
+   * @param documentId
+   * @param dto
+   * @returns
+   */
+  public async updateDocument(user: IUser, documentId: string, dto: any) {
+    const document = await this.documentRepo.findOne(documentId)
+
+    await this.authService.canEdit(user.id, {
+      organizationId: document.organizationId,
+      wikiId: document.wikiId,
+      documentId: document.id,
+    })
+
+    const res = await this.documentRepo.create({ ...document, ...dto })
+    const ret = await this.documentRepo.save(res)
+    return instanceToPlain(ret)
   }
 }

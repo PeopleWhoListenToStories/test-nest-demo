@@ -32,6 +32,11 @@ export class UserService {
       })
   }
 
+  async decodeToken(token) {
+    const user = this.jwtService.decode(token) as UserEntity;
+    return user;
+  }
+
   async findAll(queryParams): Promise<[UserEntity[], number]> {
     const query = this.userRepository.createQueryBuilder('user').orderBy('user.createAt', 'DESC')
 

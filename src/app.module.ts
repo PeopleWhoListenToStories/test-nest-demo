@@ -51,6 +51,10 @@ import { WikiEntity } from './modules/wiki/wiki.entity'
 import { DocumentModule } from './modules/document/document.module'
 import { Document } from './modules/document/document.entity'
 
+// template模块
+import { TemplateModule } from './modules/template/template.module'
+import { TemplateEntity } from './modules/template/template.entity'
+
 @Module({
   imports: [
     // ServeStaticModule.forRoot({
@@ -63,7 +67,7 @@ import { Document } from './modules/document/document.entity'
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
-        entities: [Setting, File, SMTP, Sms, AuthEntity, UserEntity, OrganizationEntity, WikiEntity, Document],
+        entities: [Setting, File, SMTP, Sms, AuthEntity, UserEntity, OrganizationEntity, WikiEntity, Document, TemplateEntity],
         host: configService.get('DB_HOST', envConfig.DB_HOST),
         port: configService.get<number>('DB_PORT', envConfig.DB_PORT),
         username: configService.get('DB_USER', envConfig.DB_USER),
@@ -83,7 +87,8 @@ import { Document } from './modules/document/document.entity'
     UserModule,
     OrganizationModule,
     WikiModule,
-    DocumentModule
+    DocumentModule,
+    TemplateModule
   ],
   controllers: [AppController],
   providers: [AppService],

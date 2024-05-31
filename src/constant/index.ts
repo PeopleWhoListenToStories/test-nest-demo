@@ -146,3 +146,10 @@ export const EMPTY_DOCUMENT = {
   }),
   state: Buffer.from(new Uint8Array([])),
 };
+
+export enum RedisDBEnum {
+  documentVersion = 0,
+  view = 1,
+  verify = 2,
+  message = 3,
+}
