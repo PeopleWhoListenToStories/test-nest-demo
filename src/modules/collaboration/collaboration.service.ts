@@ -103,8 +103,7 @@ export class CollaborationService {
         onDisconnect: this.onDisconnect.bind(this),
       });
       this.server = server;
-      console.log(this.server)
-      await this.server.listen(5003);
+      await this.server.listen(port);
       console.log(`[xl-online-editing-server] 协作服务启动成功，端口：${port}`);
     } catch (err) {
       console.error('[xl-online-editing-server] 协作服务启动失败：', err.message);

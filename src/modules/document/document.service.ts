@@ -142,20 +142,20 @@ export class DocumentService {
       state,
     }
 
-    // if (dto.templateId) {
-    //   const template = await this.templateService.findById(dto.templateId);
-    //   if (template) {
-    //     if (template.createUserId !== user.id && !template.isPublic) {
-    //       throw new HttpException('您无法使用该模板', HttpStatus.FORBIDDEN);
-    //     }
-    //     await this.templateService.useTemplate(user, template.id);
-    //     Object.assign(data, {
-    //       title: template.title,
-    //       content: template.content,
-    //       state: template.state,
-    //     });
-    //   }
-    // }
+    if (dto.templateId) {
+      const template = await this.templateService.findById(dto.templateId);
+      if (template) {
+        if (template.createUserId !== user.id && !template.isPublic) {
+          throw new HttpException('您无法使用该模板', HttpStatus.FORBIDDEN);
+        }
+        await this.templateService.useTemplate(user, template.id);
+        Object.assign(data, {
+          title: template.title,
+          content: template.content,
+          state: template.state,
+        });
+      }
+    }
 
     const document = await this.documentRepo.save(await this.documentRepo.create(data))
     const { data: userAuthList } = await this.authService.getUsersAuthInWiki(document.organizationId, document.wikiId, null)
