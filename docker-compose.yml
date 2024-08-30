@@ -1,13 +1,10 @@
 version: '3'
 services:
-  think:
+  slaykit-server:
     build:
       context: .
-    image: think
-    container_name: think
-    # volumes:
-    #   - ./config:/app/config
-    #   - ./runtime/static:/app/packages/server/static
+    image: slaykit-server
+    container_name: slaykit-server
     environment:
       - TZ=Asia/Shanghai
     expose:
@@ -15,7 +12,7 @@ services:
     ports:
       - '5002-5003:5002-5003'
     networks:
-      - think
+      - slaykit-server
 networks:
-  think:
+  slaykit-server:
     driver: bridge

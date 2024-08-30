@@ -56,19 +56,19 @@ export class UserService {
         return;
       }
   
-      const config = await this.configService.get('server.admin');
+      const _config = await this.configService.get('server.admin');
   
-      if (!config.name || !config.password || !config.email) {
+      if (!_config.name || !_config.password || !_config.email) {
         throw new Error(`请指定名称、密码和邮箱`);
       }
   
-      if (await this.userRepository.findOne({ email: config.email })) {
+      if (await this.userRepository.findOne({ email: _config.email })) {
         return;
       }
   
       try {
         const res = await this.userRepository.create({
-          ...config,
+          ..._config,
           isSystemAdmin: true,
         });
         const createdUser = (await this.userRepository.save(res)) as unknown as IUser;
@@ -189,7 +189,7 @@ export class UserService {
       token = hasUser.token
     } else {
       // 解密小程序返回的加密用户信息
-      const pc = new WxBizDataCrypt(envConfig.WX_APPID, infoData.session_key)
+      const pc = new WxBizDataCrypt(wxConfig.appId, infoData.session_key)
       const data: WxInfo = pc.decryptData(encryptedData, iv)
 
       const newUser: Partial<UserEntity> = {}
