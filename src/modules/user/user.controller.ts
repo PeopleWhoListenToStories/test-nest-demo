@@ -1,10 +1,10 @@
 import { Controller, Get, HttpStatus, HttpCode, Post, Query, Body, Request, UseGuards, UseInterceptors, HttpException, ClassSerializerInterceptor, Req } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ApiTags, ApiResponse, ApiOperation, ApiHeader, ApiBearerAuth, ApiBody } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
-import { Roles } from '../../guard/roles.guard'
-import { UserService } from './user.service'
-import { UserEntity } from './user.entity'
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard'
+import { Roles } from '~/guard/roles.guard'
+import { UserService } from '~/modules/user/user.service'
+import { UserEntity } from '~/modules/user/user.entity'
 
 @ApiTags('User 模块')
 @Controller('user')

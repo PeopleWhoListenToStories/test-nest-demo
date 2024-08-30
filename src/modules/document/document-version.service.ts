@@ -1,10 +1,10 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import * as lodash from 'lodash';
-import { buildRedis } from '../../helpers/redis.helper';
-import { UserService } from '../user/user.service';
+import { buildRedis } from '~/helpers/redis.helper';
+import { UserService } from '~/modules/user/user.service';
 import { IDocument, IUser, RedisDBEnum } from 'src/constant';
-const { config: envConfig } = require('../../../config/env.js')
+import { getConfig } from '~/config';
 
 type VerisonDataItem = { version: string; data: string; userId: IUser['id']; createUser: IUser };
 
@@ -12,7 +12,7 @@ type VerisonDataItem = { version: string; data: string; userId: IUser['id']; cre
 export class DocumentVersionService {
   private redis: Redis;
   private max = 0;
-  private error: string | null = '[xl-online-editing-server] 文档版本服务启动中';
+  private error: string | null = '[slayKit-server] 文档版本服务启动中';
 
   constructor(
     @Inject(forwardRef(() => UserService))
@@ -50,17 +50,16 @@ export class DocumentVersionService {
   }
 
   private async init() {
-    // const config = getConfig();
-    // this.max = lodash.get(config, 'server.maxDocumentVersion', 0) as number;
-    this.max = envConfig.MAX_DOCUMENT_VERSION || 20
+    const config = getConfig();
+    this.max = lodash.get(config, 'server.maxDocumentVersion', 0) as number;
 
     try {
       this.redis = await buildRedis(RedisDBEnum.documentVersion);
-      console.log('[xl-online-editing-server] 文档版本服务启动成功');
+      console.log('[slayKit-server] 文档版本服务启动成功');
       this.error = null;
     } catch (e) {
       this.error = e.message;
-      console.error(`[xl-online-editing-server] 文档版本服务启动错误: "${e.message}"`);
+      console.error(`[slayKit-server] 文档版本服务启动错误: "${e.message}"`);
     }
   }
 

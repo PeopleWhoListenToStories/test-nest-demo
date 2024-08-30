@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { SettingService } from '../modules/setting/setting.service'
-import { OssClient } from './oss/oss-client'
-import { AliyunOssClient } from './oss/aliyun-oss-client'
-import { TxyunOssClient } from './oss/txyun-oss-client'
+import { SettingService } from '~/modules/setting/setting.service'
+import { OssClient } from '~/utils/oss/oss-client'
+import { AliyunOssClient } from '~/utils/oss/aliyun-oss-client'
+import { TxyunOssClient } from '~/utils/oss/txyun-oss-client'
 
 export class Oss {
   settingService: SettingService

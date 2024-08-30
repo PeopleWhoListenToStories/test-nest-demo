@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { AuthModule } from '../auth/auth.module'
-import { UserModule } from '../user/user.module'
-import { SettingService } from './setting.service'
-import { SettingController } from './setting.controller'
-import { Setting } from './setting.entity'
+import { AuthModule } from '~/modules/auth/auth.module'
+import { UserModule } from '~/modules/user/user.module'
+import { SettingService } from '~/modules/setting/setting.service'
+import { SettingController } from '~/modules/setting/setting.controller'
+import { Setting } from '~/modules/setting/setting.entity'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Setting]), UserModule, AuthModule],

@@ -1,11 +1,11 @@
 import { Controller, Request, Body, UseInterceptors, ClassSerializerInterceptor, Post, HttpStatus, HttpCode, UseGuards, Get, Param, Delete, Query, Patch } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { IPagination } from "../../constant";
-import { JwtAuthGuard } from "../../guard/jwt-auth.guard";
-import { CreateOrganizationDto } from './organization.dto'
-import { OrganizationService } from "./organization.service";
-import { OperateUserAuthDto } from "../auth/auth.dto";
+import { IPagination } from "~/constant";
+import { JwtAuthGuard } from "~/guard/jwt-auth.guard";
+import { CreateOrganizationDto } from '~/modules/organization/organization.dto'
+import { OrganizationService } from "~/modules/organization/organization.service";
+import { OperateUserAuthDto } from "~/modules/auth/auth.dto";
 
 @ApiTags('Organization 模块')
 @Controller('organization')

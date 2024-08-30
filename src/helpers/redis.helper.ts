@@ -1,18 +1,14 @@
 import Redis from 'ioredis';
-import { RedisDBEnum } from 'src/constant';
-const { config: envConfig } = require('../../config/env')
+import * as lodash from 'lodash';
+import { RedisDBEnum } from '~/constant';
+import { getConfig } from '~/config';
 
 export const buildRedis = (db: RedisDBEnum): Promise<Redis> => {
-  const config = envConfig
-  const redisConfig = {
-    host: config.REDIS_HOST,
-    port: config.REDIS_PORT,
-    username: "default",
-    password: config.REDIS_PASSWORD,
-    db: 1
-  };
-  if (!redisConfig.host || !redisConfig.port || !redisConfig.password) {
-    console.error('[xl-online-editing-server] Redis 未配置，无法启动 Redis 服务');
+  const config = getConfig();
+  const redisConfig = lodash.get(config, 'db.redis', null);
+
+  if (!redisConfig.host || !redisConfig.port || !redisConfig.username || !redisConfig.password) {
+    console.error('[slayKit-server] Redis 未配置，无法启动 Redis 服务');
     return;
   }
 

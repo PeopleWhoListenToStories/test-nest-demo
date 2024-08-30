@@ -2,7 +2,7 @@ import * as os from 'os'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as puppeteer from 'puppeteer'
-import { uniqueid } from './uniqueid.util'
+import { uniqueid } from '~/utils/uniqueid.util'
 
 const tmpdir = path.join(os.tmpdir(), '/poster/')
 

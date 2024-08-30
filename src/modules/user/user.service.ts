@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
+import { Injectable, HttpException, HttpStatus, forwardRef, Inject } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
@@ -7,30 +7,84 @@ import { Repository } from 'typeorm'
 import { instanceToPlain } from 'class-transformer'
 import { map } from 'rxjs/operators'
 
-import { IUser } from '../../constant'
-import { UserEntity, WxLoginDTO, WxInfo } from './user.entity'
-import { WxBizDataCrypt } from '../../utils/WxBizDataCrypt.util'
-import { config as envConfig } from '../../../config/env'
+import { IUser, ORGANIZATION_LOGOS } from '~/constant'
+import { UserEntity, WxLoginDTO, WxInfo } from '~/modules/user/user.entity'
+import { OrganizationService } from '~/modules/organization/organization.service';
+import { WxBizDataCrypt } from '~/utils/WxBizDataCrypt.util'
+import { getConfig } from '~/config'
 
+const config = getConfig()
+const wxConfig = config.wx as {
+  appId: string;
+  authUrl: string;
+  secret: string;
+  grantType: string;
+};
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+
     private readonly configService: ConfigService,
+
+    @Inject(forwardRef(() => JwtService))
     private readonly jwtService: JwtService,
+
     private readonly httpService: HttpService,
+
+    @Inject(forwardRef(() => OrganizationService))
+    private readonly organizationService: OrganizationService,
   ) {
-    const name = this.configService.get('ADMIN_USER', 'admin')
-    const password = this.configService.get('ADMIN_PASSWD', 'nimda')
-    this.createUser({ name, password, role: 'admin' })
-      .then(() => {
-        console.log(`管理员账户创建成功，用户名：${name}，密码：${password}，请及时登录系统修改默认密码`)
-      })
-      .catch(() => {
-        console.log(`管理员账户已经存在，用户名：${name}，密码：${password}，请及时登录系统修改默认密码`)
-      })
+    this.createDefaultSystemAdminFromConfigFile();
+    // const name = this.configService.get('ADMIN_USER', 'admin')
+    // const password = this.configService.get('ADMIN_PASSWD', 'nimda')
+    // this.createUser({ name, password, role: 'admin' })
+    //   .then(() => {
+    //     console.log(`管理员账户创建成功，用户名：${name}，密码：${password}，请及时登录系统修改默认密码`)
+    //   })
+    //   .catch(() => {
+    //     console.log(`管理员账户已经存在，用户名：${name}，密码：${password}，请及时登录系统修改默认密码`)
+    //   })
   }
+
+    /**
+   * 从配置文件创建默认系统管理员
+   */
+    private async createDefaultSystemAdminFromConfigFile() {
+      if (await this.userRepository.findOne({ isSystemAdmin: true })) {
+        return;
+      }
+  
+      const config = await this.configService.get('server.admin');
+  
+      if (!config.name || !config.password || !config.email) {
+        throw new Error(`请指定名称、密码和邮箱`);
+      }
+  
+      if (await this.userRepository.findOne({ email: config.email })) {
+        return;
+      }
+  
+      try {
+        const res = await this.userRepository.create({
+          ...config,
+          isSystemAdmin: true,
+        });
+        const createdUser = (await this.userRepository.save(res)) as unknown as IUser;
+  
+        await this.organizationService.createOrganization(createdUser, {
+          name: createdUser.name,
+          description: `${createdUser.name}的个人组织`,
+          logo: ORGANIZATION_LOGOS[0],
+          isPersonal: true,
+        });
+  
+        console.log('[think] 已创建默认系统管理员，请尽快登录系统修改密码');
+      } catch (e) {
+        console.error(`[think] 创建默认系统管理员失败：`, e.message);
+      }
+    }
 
   async decodeToken(token) {
     const user = this.jwtService.decode(token) as UserEntity;
@@ -116,7 +170,7 @@ export class UserService {
   async wxLogin(user: WxLoginDTO): Promise<Partial<UserEntity>> {
     const { code, encryptedData, iv } = user
 
-    const url = `${envConfig.WX_AUTH_URL}?grant_type=${envConfig.WX_GRANT_TYPE}&appid=${envConfig.WX_APPID}&secret=${envConfig.WX_SECRET}&js_code=${code}`
+    const url = `${wxConfig.authUrl}?grant_type=${wxConfig.grantType}&appid=${wxConfig.appId}&secret=${wxConfig.secret}&js_code=${code}`
 
     const { status: infoStatus, data: infoData } = await this.getInfo(url) // 获取openid和session_key
 

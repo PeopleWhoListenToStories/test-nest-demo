@@ -1,14 +1,14 @@
 import { Controller, Request, Param, ClassSerializerInterceptor, UseInterceptors, Get, HttpCode, HttpStatus, UseGuards, Post, Body, Patch, Delete, Query } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
-import { CheckWikiStatus, WikiStatusGuard } from '../../guard/wiki-status.guard'
-import { WikiService } from './wiki.service'
-import { CreateWikiDto } from './create-wiki.dto'
-import { UpdateWikiDto } from './update-wiki.dto'
-import { IPagination, WikiStatus } from 'src/constant'
-import { OperateUserAuthDto } from '../auth/auth.dto'
-import { ShareWikiDto } from './share-wiki.dto'
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard'
+import { CheckWikiStatus, WikiStatusGuard } from '~/guard/wiki-status.guard'
+import { WikiService } from '~/modules/wiki/wiki.service'
+import { CreateWikiDto } from '~/modules/wiki/create-wiki.dto'
+import { UpdateWikiDto } from '~/modules/wiki/update-wiki.dto'
+import { OperateUserAuthDto } from '~/modules/auth/auth.dto'
+import { ShareWikiDto } from '~/modules/wiki/share-wiki.dto'
+import { IPagination, WikiStatus } from '~/constant'
 
 @ApiTags('Wiki 模块')
 @Controller('wiki')
@@ -276,14 +276,14 @@ export class WikiController {
    * @param wikiId
    * @returns
    */
-  // @ApiOperation({ tags: ['Wiki'], summary: '获取公开知识库首页文档' })
-  // @ApiParam({ name: 'id', type: String, description: 'wikiId' })
-  // @Get('/public/homedoc/:id')
-  // @CheckWikiStatus(WikiStatus.public)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(ClassSerializerInterceptor)
-  // @HttpCode(HttpStatus.OK)
-  // async getWikiPublicHomeDocument(@Request() req, @Param('id') wikiId) {
-  //   return await this.wikiService.getPublicWikiHomeDocument(wikiId);
-  // }
+  @ApiOperation({ tags: ['Wiki'], summary: '获取公开知识库首页文档' })
+  @ApiParam({ name: 'id', type: String, description: 'wikiId' })
+  @Get('/public/homedoc/:id')
+  @CheckWikiStatus(WikiStatus.public)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
+  async getWikiPublicHomeDocument(@Request() req, @Param('id') wikiId) {
+    return await this.wikiService.getPublicWikiHomeDocument(wikiId);
+  }
 }

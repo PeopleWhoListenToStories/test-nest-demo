@@ -1,13 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { TemplateController } from './template.controller';
-import { TemplateEntity } from './template.entity';
-import { DocumentModule } from '../document/document.module';
+import { TemplateController } from '~/modules/template/template.controller';
+import { TemplateEntity } from '~/modules/template/template.entity';
+import { TemplateService } from '~/modules/template/template.service';
+import { DocumentModule } from '~/modules/document/document.module';
 // import { MessageModule } from '@modules/message.module';
-import { UserModule } from '../user/user.module';
-import { WikiModule } from '../wiki/wiki.module';
-import { TemplateService } from './template.service';
+import { UserModule } from '~/modules/user/user.module';
+import { WikiModule } from '~/modules/wiki/wiki.module';
 
 @Module({
   imports: [

@@ -3,17 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { instanceToPlain } from 'class-transformer'
 import { Repository } from 'typeorm'
 
-import { AuthEnum, DocumentStatus, EMPTY_DOCUMENT, IUser } from '../../constant'
-import { CreateDocumentDto } from './create-document.dto'
-import { Document } from './document.entity'
-import { AuthService } from '../auth/auth.service'
-import { WikiService } from '../wiki/wiki.service'
-import { ShareDocumentDto } from './share-document.dto'
-import { CollaborationService } from '../collaboration/collaboration.service'
-import { UserService } from '../user/user.service'
+import { AuthEnum, DocumentStatus, EMPTY_DOCUMENT, IUser } from '~/constant'
+import { CreateDocumentDto } from '~/modules/document/create-document.dto'
+import { Document } from '~/modules/document/document.entity'
+import { AuthService } from '~/modules/auth/auth.service'
+import { WikiService } from '~/modules/wiki/wiki.service'
+import { ShareDocumentDto } from '~/modules/document/share-document.dto'
+import { CollaborationService } from '~/modules/collaboration/collaboration.service'
+import { UserService } from '~/modules/user/user.service'
 import { ConfigService } from '@nestjs/config'
-import { TemplateService } from '../template/template.service'
-import { DocumentVersionService } from './document-version.service';
+import { TemplateService } from '~/modules/template/template.service'
+import { DocumentVersionService } from '~/modules/document/document-version.service';
 
 @Injectable()
 export class DocumentService {

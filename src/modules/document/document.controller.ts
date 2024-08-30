@@ -1,9 +1,9 @@
 import { Controller, Get, Request, Query, Param, HttpCode, HttpStatus, Body, Post, UseGuards, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard';
-import { DocumentService } from './document.service';
-import { CreateDocumentDto } from './create-document.dto';
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard';
+import { DocumentService } from '~/modules/document/document.service';
+import { CreateDocumentDto } from '~/modules/document/create-document.dto';
 
 
 @ApiTags('Document 模块')

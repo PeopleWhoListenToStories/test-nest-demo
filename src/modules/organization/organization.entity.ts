@@ -1,4 +1,4 @@
-import { getShortId } from '../../helpers/shortid.herlper';
+import { getShortId } from '~/helpers/shortid.herlper';
 import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('organization')

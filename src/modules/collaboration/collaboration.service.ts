@@ -4,11 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { onAuthenticatePayload, onChangePayload, onLoadDocumentPayload, Server } from '@hocuspocus/server';
 import { TiptapTransformer } from '@hocuspocus/transformer';
 // import { DocumentVersionService } from '@services/document-version.service';
-import { TemplateService } from '../template/template.service';
-import { DocumentStatus, IUser } from 'src/constant';
-import { UserService } from '../user/user.service';
-import { DocumentService } from '../document/document.service';
-import { DocumentVersionService } from '../document/document-version.service';
+import { TemplateService } from '~/modules/template/template.service';
+import { DocumentStatus, IUser } from '~/constant';
+import { UserService } from '~/modules/user/user.service';
+import { DocumentService } from '~/modules/document/document.service';
+import { DocumentVersionService } from '~/modules/document/document-version.service';
 import * as lodash from 'lodash';
 import * as Y from 'yjs';
 
@@ -104,9 +104,9 @@ export class CollaborationService {
       });
       this.server = server;
       await this.server.listen(port);
-      console.log(`[xl-online-editing-server] 协作服务启动成功，端口：${port}`);
+      console.log(`[slayKit-server] 协作服务启动成功，端口：${port}`);
     } catch (err) {
-      console.error('[xl-online-editing-server] 协作服务启动失败：', err.message);
+      console.error('[slayKit-server] 协作服务启动失败：', err.message);
     }
   }
 

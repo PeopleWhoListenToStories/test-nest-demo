@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from "@nest
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 
-import { AuthEnum, IOrganization, IUser, buildMessageURL } from "../../constant";
-import { UserEntity } from "../user/user.entity";
-import { OrganizationEntity } from './organization.entity';
-import { CreateOrganizationDto } from "./organization.dto";
-import { OperateUserAuthDto } from "../auth/auth.dto";
-import { AuthService } from "../auth/auth.service";
-import { UserService } from "../user/user.service";
+import { AuthEnum, IOrganization, IUser, buildMessageURL } from "~/constant";
+import { UserEntity } from "~/modules/user/user.entity";
+import { OrganizationEntity } from '~/modules/organization/organization.entity';
+import { CreateOrganizationDto } from "~/modules/organization/organization.dto";
+import { OperateUserAuthDto } from "~/modules/auth/auth.dto";
+import { AuthService } from "~/modules/auth/auth.service";
+import { UserService } from "~/modules/user/user.service";
 
 @Injectable()
 export class OrganizationService {

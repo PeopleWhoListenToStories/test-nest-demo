@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { OrganizationController } from './organization.controller';
 import { OrganizationEntity } from './organization.entity';
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '~/modules/auth/auth.module';
 // import { MessageModule } from '@modules/message.module';
-import { UserModule } from '../user/user.module';
+import { UserModule } from '~/modules/user/user.module';
 // import { WikiModule } from '../wiki/wiki.module';
 import { OrganizationService } from './organization.service';
 

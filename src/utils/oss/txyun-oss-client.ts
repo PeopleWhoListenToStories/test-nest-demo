@@ -1,5 +1,5 @@
 import * as TxyunOSS from 'cos-nodejs-sdk-v5'
-import { OssClient } from './oss-client'
+import { OssClient } from '~/utils/oss/oss-client'
 
 export class TxyunOssClient extends OssClient {
   private async buildClient() {

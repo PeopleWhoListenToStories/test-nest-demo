@@ -153,3 +153,5 @@ export enum RedisDBEnum {
   verify = 2,
   message = 3,
 }
+
+export const FILE_CHUNK_SIZE = 2 * 1024 * 1024;

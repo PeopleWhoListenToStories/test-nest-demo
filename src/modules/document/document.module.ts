@@ -4,12 +4,12 @@ import { ConfigModule } from '@nestjs/config';
 
 
 import { DocumentController } from './document.controller'
-import { Document } from './document.entity';
-import { DocumentService } from './document.service';
-import { AuthModule } from '../auth/auth.module';
-import { WikiModule } from '../wiki/wiki.module';
-import { UserModule } from '../user/user.module';
-import { TemplateModule } from '../template/template.module';
+import { Document } from '~/modules/document/document.entity';
+import { DocumentService } from '~/modules/document/document.service';
+import { AuthModule } from '~/modules/auth/auth.module';
+import { WikiModule } from '~/modules/wiki/wiki.module';
+import { UserModule } from '~/modules/user/user.module';
+import { TemplateModule } from '~/modules/template/template.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Document]),

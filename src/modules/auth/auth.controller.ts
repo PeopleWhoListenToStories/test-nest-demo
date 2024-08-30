@@ -1,11 +1,18 @@
 import { Controller, HttpStatus,  HttpCode, Get, Res, Post, Request, Body,  UseInterceptors, ClassSerializerInterceptor, UseGuards } from '@nestjs/common'
 import { ApiHeader, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { AuthService } from './auth.service'
-import { Roles } from '../../guard/roles.guard'
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
-import { UserDTO, WxLoginDTO } from '../user/user.entity'
+import { AuthService } from '~/modules/auth/auth.service'
+import { Roles } from '~/guard/roles.guard'
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard'
+import { UserDTO, WxLoginDTO } from '~/modules/user/user.entity'
 
-import { config as envConfig } from '../../../config/env'
+import { getConfig } from '~/config'
+const config = getConfig()
+const wxConfig = config.wx as {
+  appId: string;
+  authUrl: string;
+  secret: string;
+  grantType: string;
+};
 
 @ApiTags('Auth 模块')
 @Controller('auth')
@@ -36,8 +43,7 @@ export class AuthController {
   @ApiOperation({ summary: '微信登录跳转' })
   @Get('wechatLogin')
   async wechatLogin (@Request() req, @Res() res) {
-    const APPID = envConfig.APPID;
-    res.redirect(`https://open.weixin.qq.com/connect/qrconnect?appid=${APPID}&redirect_uri=${req.redirect}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`);
+    res.redirect(`https://open.weixin.qq.com/connect/qrconnect?appid=${wxConfig.appId}&redirect_uri=${req.redirect}&response_type=code&scope=snsapi_login&state=STATE#wechat_redirect`);
   }
 
   /**

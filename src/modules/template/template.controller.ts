@@ -1,9 +1,9 @@
 import { Controller, Request, Param, ClassSerializerInterceptor, UseInterceptors, Get, HttpCode, HttpStatus, UseGuards, Post, Body, Patch, Delete, Query } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
-import { TemplateDto } from './template.dto';
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard';
-import { TemplateService } from './template.service';
+import { TemplateDto } from '~/modules/template/template.dto';
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard';
+import { TemplateService } from '~/modules/template/template.service';
 
 @ApiTags('Template 模块')
 @Controller('template')

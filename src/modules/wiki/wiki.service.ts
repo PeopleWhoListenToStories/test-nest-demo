@@ -3,17 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { instanceToPlain } from 'class-transformer'
 import { Repository } from 'typeorm'
 import * as lodash from 'lodash'
-import { array2tree } from '../../helpers/tree.helper'
 
-import { AuthEnum, DocumentStatus, IUser, WikiStatus } from '../../constant'
-import { WikiEntity } from './wiki.entity'
-import { AuthService } from '../auth/auth.service'
-import { UserService } from '../user/user.service'
-import { DocumentService } from '../document/document.service'
-import { CreateWikiDto } from './create-wiki.dto'
-import { UpdateWikiDto } from './update-wiki.dto'
-import { OperateUserAuthDto } from '../auth/auth.dto'
-import { ShareWikiDto } from './share-wiki.dto'
+import { array2tree } from '~/helpers/tree.helper'
+import { WikiEntity } from '~/modules/wiki/wiki.entity'
+import { AuthService } from '~/modules/auth/auth.service'
+import { UserService } from '~/modules/user/user.service'
+import { ViewService } from '~/modules/view/view.service'
+import { DocumentService } from '~/modules/document/document.service'
+import { CreateWikiDto } from '~/modules/wiki/create-wiki.dto'
+import { UpdateWikiDto } from '~/modules/wiki/update-wiki.dto'
+import { OperateUserAuthDto } from '~/modules/auth/auth.dto'
+import { ShareWikiDto } from '~/modules/wiki/share-wiki.dto'
+import { AuthEnum, DocumentStatus, IUser, WikiStatus } from '~/constant'
 
 @Injectable()
 export class WikiService {
@@ -36,8 +37,8 @@ export class WikiService {
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
 
-    // @Inject(forwardRef(() => ViewService)) 
-    // private readonly viewService: ViewService
+    @Inject(forwardRef(() => ViewService)) 
+    private readonly viewService: ViewService
     
   ) {}
 
@@ -587,16 +588,16 @@ export class WikiService {
     }
   }
 
-  // /**
-  //  * 获取公开知识库首页文档（首页文档由系统自动创建）
-  //  * @param user
-  //  * @param wikiId
-  //  * @returns
-  //  */
-  // async getPublicWikiHomeDocument(wikiId) {
-  //   const res = await this.documentService.documentRepo.findOne({ wikiId, isWikiHome: true })
-  //   this.viewService.create(null, res)
-  //   const views = await this.viewService.getDocumentTotalViews(res.id)
-  //   return { ...lodash.omit(instanceToPlain(res), ['state']), views }
-  // }
+  /**
+   * 获取公开知识库首页文档（首页文档由系统自动创建）
+   * @param user
+   * @param wikiId
+   * @returns
+   */
+  async getPublicWikiHomeDocument(wikiId) {
+    const res = await this.documentService.documentRepo.findOne({ wikiId, isWikiHome: true })
+    this.viewService.create(null, res)
+    const views = await this.viewService.getDocumentTotalViews(res.id)
+    return { ...lodash.omit(instanceToPlain(res), ['state']), views }
+  }
 }

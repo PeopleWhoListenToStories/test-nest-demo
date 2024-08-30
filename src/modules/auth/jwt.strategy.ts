@@ -5,14 +5,20 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { UserEntity } from '../user/user.entity'
 import { AuthService } from './auth.service'
 
-import { config as envConfig } from '../../../config/env'
+import { getConfig } from '~/config';
+
+const config = getConfig();
+const jwtConfig = config.jwt as {
+  secretKey: string;
+  expiresIn: string;
+};
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(@Inject(forwardRef(() => AuthService)) private readonly authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: envConfig.JWT_SECRET,
+      secretOrKey: jwtConfig.secretKey,
       ignoreExpiration: false,
       // jwtFromRequest: ExtractJwt.fromExtractors([
       //   (request: RequestType) => {

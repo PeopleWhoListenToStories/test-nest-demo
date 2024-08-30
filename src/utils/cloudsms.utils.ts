@@ -1,7 +1,7 @@
 // 'use strict';
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { SettingService } from '../modules/setting/setting.service'
-import { errorLogger } from '../logger'
+import { SettingService } from '~/modules/setting/setting.service'
+import { errorLogger } from '~/logger'
 
 import QcloudSms from 'qcloudsms_js'
 

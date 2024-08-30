@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
-import { DocumentStatus } from '../../constant/index';
+import { DocumentStatus } from '~/constant';
 
-import { getShortId } from '../../helpers/shortid.herlper';
+import { getShortId } from '~/helpers/shortid.herlper';
 
 @Entity('document')
 export class Document {

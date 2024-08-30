@@ -1,14 +1,13 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
-
-import { TemplateDto } from '../template/template.dto';
-import { TemplateEntity } from '../template/template.entity';
-import { UserService } from '../user/user.service';
 import { instanceToPlain } from 'class-transformer';
 import * as lodash from 'lodash';
 import { Repository } from 'typeorm';
-import { IUser } from 'src/constant';
+
+import { TemplateDto } from '~/modules/template/template.dto';
+import { TemplateEntity } from '~/modules/template/template.entity';
+import { UserService } from '~/modules/user/user.service';
+import { IUser } from '~/constant';
 
 @Injectable()
 export class TemplateService {

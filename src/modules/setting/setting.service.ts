@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import * as merge from 'deepmerge'
-import { Setting } from './setting.entity'
-import { UNPROTECTED_KEYS, i18n } from './setting.constant'
+import { Setting } from '~/modules/setting/setting.entity'
+import { UNPROTECTED_KEYS, i18n } from '~/modules/setting/setting.constant'
 
 @Injectable()
 export class SettingService {

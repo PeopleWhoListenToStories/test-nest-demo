@@ -2,12 +2,12 @@ import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { getConnection, In, Repository } from 'typeorm'
 import { Cron, Interval, Timeout } from '@nestjs/schedule'
-import { dateFormat, dayFormat } from '../../utils/date.util'
-import { Sms } from './sms.entity'
-import { isMobile } from '../../utils/validate.util'
-import { infoLogger } from '../../logger/index'
-import { CloudSms } from '../../utils/cloudsms.utils'
-import { SettingService } from '../setting/setting.service'
+import { dateFormat, dayFormat } from '~/utils/date.util'
+import { isMobile } from '~/utils/validate.util'
+import { CloudSms } from '~/utils/cloudsms.utils'
+import { infoLogger } from '~/logger/index'
+import { Sms } from '~/modules/sms/sms.entity'
+import { SettingService } from '~/modules/setting/setting.service'
 
 const dateList = [
   {

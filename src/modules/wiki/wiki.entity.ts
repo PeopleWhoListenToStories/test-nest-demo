@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { getShortId } from '../../helpers/shortid.herlper';
-import { DEFAULT_WIKI_AVATAR, WikiStatus } from '../../constant';
+import { DEFAULT_WIKI_AVATAR, WikiStatus } from '~/constant';
 
 @Entity('wiki')
 export class WikiEntity {

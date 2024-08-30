@@ -1,10 +1,10 @@
 import { Controller, Post, Get, Delete, Param, Query, UseInterceptors, UploadedFile, UseGuards, HttpCode, HttpStatus } from '@nestjs/common'
-import { ApiTags, ApiResponse, ApiOperation, ApiHeader } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../../guard/jwt-auth.guard'
-import { RolesGuard, Roles } from '../../guard/roles.guard'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { FileService } from './file.service'
-import { File } from './file.entity'
+import { ApiTags, ApiResponse, ApiOperation, ApiHeader } from '@nestjs/swagger'
+import { JwtAuthGuard } from '~/guard/jwt-auth.guard'
+import { RolesGuard, Roles } from '~/guard/roles.guard'
+import { FileService } from '~/modules/file/file.service'
+import { File } from '~/modules/file/file.entity'
 
 @ApiTags('File')
 @Controller('file')

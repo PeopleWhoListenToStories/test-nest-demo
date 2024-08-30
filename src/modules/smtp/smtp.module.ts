@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { AuthModule } from '../auth/auth.module'
-import { SettingModule } from '../setting/setting.module'
-import { SMTPService } from './smtp.service'
-import { SMTPController } from './smtp.controller'
-import { SMTP } from './smtp.entity'
+import { AuthModule } from '~/modules/auth/auth.module'
+import { SettingModule } from '~/modules/setting/setting.module'
+import { SMTPService } from '~/modules/smtp/smtp.service'
+import { SMTPController } from '~/modules/smtp/smtp.controller'
+import { SMTP } from '~/modules/smtp/smtp.entity'
 
 @Module({
   imports: [TypeOrmModule.forFeature([SMTP]), SettingModule, AuthModule],

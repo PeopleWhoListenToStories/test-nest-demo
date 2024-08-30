@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsOptional } from 'class-validator'
-import { WikiStatus } from 'src/constant'
+import { WikiStatus } from '~/constant'
 
 export class ShareWikiDto {
   // 目标状态：公开或私有

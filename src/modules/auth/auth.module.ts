@@ -10,12 +10,18 @@ import { AuthEntity } from './auth.entity'
 import { JwtStrategy } from './jwt.strategy'
 // import { JwtAuthGuard } from '../../guard/jwt-auth.guard';
 
-import { config as envConfig } from '../../../config/env'
+import { getConfig } from '~/config';
+
+const config = getConfig();
+const jwtConfig = config.jwt as {
+  secretKey: string;
+  expiresIn: string;
+};
 
 const passModule = PassportModule.register({ defaultStrategy: 'jwt' })
 const jwtModule = JwtModule.register({
-  secret: envConfig.JWT_SECRET,
-  signOptions: { expiresIn: envConfig.JWT_SIGN_EXPIRES_IN || '1h' },
+  secret: jwtConfig.secretKey,
+  signOptions: { expiresIn: jwtConfig.expiresIn },
 })
 
 @Module({

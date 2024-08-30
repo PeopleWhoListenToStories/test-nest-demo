@@ -1,0 +1,82 @@
+# 开发环境配置
+server:
+  prefix: '/api'
+  port: 5002
+  collaborationPort: 5003
+  maxDocumentVersion: 20 # 最大版本记录数
+  logRetainDays: 3 # 日志保留天数，比如只保留近三天日志
+  enableRateLimit: true # 是否限流
+  rateLimitWindowMs: 60000 # 限流时间
+  rateLimitMax: 1000 # 单位限流时间内单个 ip 最大访问数量
+  email: # 邮箱服务，参考 http://help.163.com/09/1223/14/5R7P6CJ600753VB8.html?servCode=6010376 获取 SMTP 配置
+    host: ''
+    port: 465
+    user: ''
+    password: ''
+  admin:
+    name: 'admin' # 注意修改
+    password: 'admin' # 注意修改
+    email: 'admin@foxmail.com' # 注意修改为真实邮箱地址
+
+# 数据库配置
+db:
+  mysql:
+    host: 'localhost'
+    username: 'root'
+    password: 'root'
+    database: 'root'
+    port: 3306
+    charset: 'utf8mb4'
+    timezone: '+08:00'
+    synchronize: true
+  redis:
+    host: 'localhost'
+    port: '6379'
+    username: 'default'
+    password: '123456'
+
+# oss 文件存储服务
+oss:
+  local:
+    enable: true
+    # 线上更改为服务端地址（如：https://api.codingit.cn）
+    server: 'http://localhost:5002'
+  # 以下为各厂商 sdk 配置，不要修改字段，填入值即可
+  tencent:
+    enable: false
+    config:
+      SecretId: ''
+      SecretKey: ''
+      Bucket: ''
+      Region: ''
+  aliyun:
+    enable: false
+    config:
+      accessKeyId: ''
+      accessKeySecret: ''
+      bucket: ''
+      https: true
+      region: ''
+
+# jwt 配置
+jwt:
+  secretKey: 'zA_Think+KNOWLEDGE+WIKI+DOCUMENTS@2022'
+  expiresIn: '6h'
+
+# weixin 配置
+wx:
+  appId: ''
+  authUrl: ''
+  secret: ''
+  grantType: ''
+
+# swagger 配置
+swagger:
+  setupHttp: 'http://127.0.0.1'
+  setupPath: 'api-docs' # swagger Api文档访问路径
+  title: 'SlayKit Server' # 标题
+  titleDesc: '🚀 SlayKit Server DEV API' # 描述
+  apiVersion: '1.0' # API版本
+  prefix: '/api' # Swagger Api Prefix
+  cdnUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.7.2' # Swagger CDN Url
+

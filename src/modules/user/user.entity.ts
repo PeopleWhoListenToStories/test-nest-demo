@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Exclude } from 'class-transformer'
 import * as bcrypt from 'bcryptjs'
 import { IsNotEmpty } from 'class-validator'
-import { UserStatus } from '../../constant'
+import { UserStatus } from '~/constant'
 
 @Entity('user')
 export class UserEntity {
