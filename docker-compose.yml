@@ -1,0 +1,18 @@
+version: '3'
+services:
+  slaykit-server:
+    build:
+      context: .
+    image: slaykit-server
+    container_name: slaykit-server
+    environment:
+      - TZ=Asia/Shanghai
+    expose:
+      - '5002-5003'
+    ports:
+      - '5002-5003:5002-5003'
+    networks:
+      - slaykit-server
+networks:
+  slaykit-server:
+    driver: bridge
